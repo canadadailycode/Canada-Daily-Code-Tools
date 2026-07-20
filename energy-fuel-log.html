@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy &amp; Fuel Consumption Log — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+  .masthead .file-count{font-family:var(--mono); font-size:0.85rem; opacity:0.85;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .dashboard{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .stat{background:var(--paper-card); padding:16px 14px;}
+  .stat .label{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-soft); margin-bottom:6px;}
+  .stat .value{font-family:var(--mono); font-size:1.3rem; color:var(--ink);}
+  .stat.stamp{background:var(--gold-soft);}
+  .stat.stamp .value{color:var(--gold);}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field select, .field textarea{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.small{padding:5px 10px; font-size:0.76rem;}
+  .btn.danger{border-color:var(--red); color:var(--red); background:transparent;}
+  .actions{display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;}
+
+  .ledger{width:100%; border-collapse:collapse; background:var(--paper-card); font-size:0.85rem;}
+  .ledger th{text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:8px 10px;}
+  .ledger td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ledger tr:hover td{background:var(--teal-soft);}
+  .num{font-family:var(--mono); white-space:nowrap; text-align:right;}
+  .empty-row{text-align:center; padding:30px 10px; color:var(--ink-soft); font-style:italic;}
+  .src-table th, .src-table td{text-align:right;}
+  .src-table th:first-child, .src-table td:first-child{text-align:left;}
+  .tag{display:inline-block; font-family:var(--mono); font-size:0.68rem; padding:3px 7px; border-radius:2px; text-transform:uppercase; background:var(--teal-soft); color:var(--teal); border:1px solid var(--teal);}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+
+  @media print{ .no-print{display:none !important;} body{background:#fff;} }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="kicker">Canada Daily Code — Field Tools</div>
+      <h1>Energy &amp; Fuel Consumption Log</h1>
+    </div>
+    <div class="file-count">FILE LOG · <span id="entryCount">0</span> readings recorded</div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not tax, legal, or engineering advice.</strong> This tool organizes site energy and fuel consumption readings by source and date. It does <strong>not</strong> calculate emissions, carbon tax owed, or exemption eligibility — federal and provincial industrial carbon pricing (e.g. the Output-Based Pricing System) requires facility-specific emission factors and a verified reporting methodology that only a qualified verifier or compliance professional can apply correctly. A wrong number here could mean a wrong regulatory filing. Use this to keep clean source records; confirm every calculation and eligibility question with a licensed compliance professional or accountant.
+</div>
+
+<div class="wrap">
+
+  <div class="section-head"><span class="no">No. 01</span><h2>Reporting period picture</h2></div>
+  <div class="dashboard">
+    <div class="stat"><div class="label">Total readings logged</div><div class="value" id="statCount">0</div></div>
+    <div class="stat"><div class="label">Energy sources tracked</div><div class="value" id="statSources">0</div></div>
+    <div class="stat"><div class="label">Readings this month</div><div class="value" id="statThisMonth">0</div></div>
+    <div class="stat stamp"><div class="label">Flagged for review</div><div class="value" id="statFlagged">0</div></div>
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 02</span><h2>Log a reading</h2></div>
+  <div class="card no-print">
+    <div class="row3">
+      <div class="field"><label for="rDate">Date of reading</label><input type="date" id="rDate"></div>
+      <div class="field"><label for="rSource">Source / equipment</label><input type="text" id="rSource" placeholder="e.g. Haul truck fleet, Site generator 2"></div>
+      <div class="field"><label for="rFuel">Energy or fuel type</label>
+        <select id="rFuel">
+          <option>Diesel</option><option>Natural gas</option><option>Propane</option>
+          <option>Gasoline</option><option>Electricity (grid)</option><option>Electricity (on-site generation)</option>
+          <option>Coal</option><option>Biomass</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="field"><label for="rQty">Quantity consumed</label><input type="number" id="rQty" min="0" step="0.01"></div>
+      <div class="field"><label for="rUnit">Unit</label>
+        <select id="rUnit">
+          <option>Litres</option><option>m³</option><option>kWh</option><option>GJ</option><option>Tonnes</option>
+        </select>
+      </div>
+      <div class="field"><label for="rCategory">Activity category</label>
+        <select id="rCategory">
+          <option>Standard site operations</option>
+          <option>Potentially exempt / eligible activity</option>
+          <option>Unsure — needs compliance review</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label for="rNotes">Notes (meter ID, shift, source document reference)</label><input type="text" id="rNotes" placeholder="e.g. Meter #4, day shift, ticket #1182"></div>
+    <div class="actions">
+      <button class="btn" id="saveBtn">Save reading</button>
+      <button class="btn secondary" id="clearFormBtn">Clear form</button>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 03</span><h2>Summary by source</h2></div>
+  <table class="ledger src-table">
+    <thead><tr><th>Source / equipment</th><th>Fuel / energy type</th><th>Readings</th><th>Total quantity</th></tr></thead>
+    <tbody id="srcBody"><tr><td colspan="4" class="empty-row">No records yet.</td></tr></tbody>
+  </table>
+
+  <div class="section-head"><span class="no">No. 04</span><h2>All readings</h2></div>
+  <div style="overflow-x:auto;">
+    <table class="ledger">
+      <thead><tr><th>Date</th><th>Source</th><th>Type</th><th>Quantity</th><th>Category</th><th>Notes</th><th class="no-print">—</th></tr></thead>
+      <tbody id="readingBody"><tr><td colspan="7" class="empty-row">No readings yet — log your first entry above.</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="actions no-print" style="margin-top:18px;">
+    <button class="btn secondary" id="exportBtn">Export CSV for compliance review</button>
+    <button class="btn secondary" id="printBtn">Print report</button>
+    <button class="btn danger" id="wipeBtn">Erase all data</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> everything stays in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required. Export CSV regularly to keep a backup, especially before clearing browser data or switching devices.</p>
+    <p>Built by Canada Daily Code as a free, offline record-keeping aid. Not affiliated with Environment and Climate Change Canada or any provincial regulator. Does not calculate emissions or tax exemptions. Always confirm eligibility and figures with a licensed compliance professional before filing.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'cdc-energy-fuel-log-v1';
+
+  function loadData(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch(e){ return []; }
+  }
+  function saveData(d){ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
+  let readings = loadData();
+
+  const els = {
+    rDate: document.getElementById('rDate'), rSource: document.getElementById('rSource'),
+    rFuel: document.getElementById('rFuel'), rQty: document.getElementById('rQty'),
+    rUnit: document.getElementById('rUnit'), rCategory: document.getElementById('rCategory'),
+    rNotes: document.getElementById('rNotes'),
+    saveBtn: document.getElementById('saveBtn'), clearFormBtn: document.getElementById('clearFormBtn'),
+    srcBody: document.getElementById('srcBody'), readingBody: document.getElementById('readingBody'),
+    entryCount: document.getElementById('entryCount'), statCount: document.getElementById('statCount'),
+    statSources: document.getElementById('statSources'), statThisMonth: document.getElementById('statThisMonth'),
+    statFlagged: document.getElementById('statFlagged'),
+    exportBtn: document.getElementById('exportBtn'), printBtn: document.getElementById('printBtn'),
+    wipeBtn: document.getElementById('wipeBtn'),
+  };
+
+  const today = new Date().toISOString().slice(0,10);
+  els.rDate.value = today;
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+  function fmtNum(n, dec){ return Number(n||0).toLocaleString('en-CA', {maximumFractionDigits: dec!=null?dec:2, minimumFractionDigits: dec!=null?dec:0}); }
+
+  function render(){
+    if(readings.length === 0){
+      els.readingBody.innerHTML = '<tr><td colspan="7" class="empty-row">No readings yet — log your first entry above.</td></tr>';
+    } else {
+      els.readingBody.innerHTML = readings.slice().sort((a,b)=> b.date.localeCompare(a.date)).map(r=>`
+        <tr>
+          <td>${r.date}</td><td>${escapeHtml(r.source)}</td><td>${escapeHtml(r.fuel)}</td>
+          <td class="num">${fmtNum(r.qty,2)} ${escapeHtml(r.unit)}</td>
+          <td><span class="tag">${escapeHtml(r.category)}</span></td>
+          <td>${escapeHtml(r.notes)}</td>
+          <td class="no-print"><button class="btn small danger" data-id="${r.id}">Delete</button></td>
+        </tr>`).join('');
+      els.readingBody.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          readings = readings.filter(r=> String(r.id) !== btn.dataset.id);
+          saveData(readings); render();
+        });
+      });
+    }
+
+    // Source summary
+    const srcMap = {};
+    readings.forEach(r=>{
+      const key = r.source + '|' + r.fuel + '|' + r.unit;
+      srcMap[key] = srcMap[key] || {source:r.source, fuel:r.fuel, unit:r.unit, count:0, total:0};
+      srcMap[key].count += 1;
+      srcMap[key].total += Number(r.qty||0);
+    });
+    const srcKeys = Object.keys(srcMap).sort();
+    if(srcKeys.length === 0){
+      els.srcBody.innerHTML = '<tr><td colspan="4" class="empty-row">No records yet.</td></tr>';
+    } else {
+      els.srcBody.innerHTML = srcKeys.map(k=>{
+        const s = srcMap[k];
+        return `<tr><td>${escapeHtml(s.source)}</td><td>${escapeHtml(s.fuel)}</td><td class="num">${s.count}</td><td class="num">${fmtNum(s.total,2)} ${escapeHtml(s.unit)}</td></tr>`;
+      }).join('');
+    }
+
+    // Stats
+    const uniqueSources = new Set(readings.map(r=> r.source)).size;
+    const thisMonthPrefix = today.slice(0,7);
+    const thisMonthCount = readings.filter(r=> r.date.startsWith(thisMonthPrefix)).length;
+    const flaggedCount = readings.filter(r=> r.category !== 'Standard site operations').length;
+
+    els.entryCount.textContent = readings.length;
+    els.statCount.textContent = readings.length;
+    els.statSources.textContent = uniqueSources;
+    els.statThisMonth.textContent = thisMonthCount;
+    els.statFlagged.textContent = flaggedCount;
+  }
+
+  els.saveBtn.addEventListener('click', ()=>{
+    if(!els.rSource.value.trim() || !els.rQty.value){
+      alert('Please fill in the source/equipment and quantity consumed.'); return;
+    }
+    readings.push({
+      id: Date.now(), date: els.rDate.value || today, source: els.rSource.value.trim(),
+      fuel: els.rFuel.value, qty: Number(els.rQty.value), unit: els.rUnit.value,
+      category: els.rCategory.value, notes: els.rNotes.value.trim()
+    });
+    saveData(readings);
+    els.rSource.value=''; els.rQty.value=''; els.rNotes.value=''; els.rDate.value = today;
+    render();
+  });
+  els.clearFormBtn.addEventListener('click', ()=>{
+    els.rSource.value=''; els.rQty.value=''; els.rNotes.value=''; els.rDate.value = today;
+  });
+
+  function csvSafe(str){
+    const s = (str || '').toString().replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }
+
+  els.exportBtn.addEventListener('click', ()=>{
+    if(readings.length === 0){ alert('No readings to export yet.'); return; }
+    const header = ['Date','Source/Equipment','Fuel/Energy Type','Quantity','Unit','Activity Category','Notes'];
+    const lines = [header.join(',')];
+    readings.slice().sort((a,b)=> a.date.localeCompare(b.date)).forEach(r=>{
+      lines.push([r.date, csvSafe(r.source), csvSafe(r.fuel), r.qty, csvSafe(r.unit), csvSafe(r.category), csvSafe(r.notes)].join(','));
+    });
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'energy-fuel-log-' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  els.printBtn.addEventListener('click', ()=> window.print());
+
+  els.wipeBtn.addEventListener('click', ()=>{
+    if(confirm('This will permanently delete every reading stored in this browser. Export a CSV first if you want to keep a copy. Continue?')){
+      readings = [];
+      saveData(readings);
+      render();
+    }
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
