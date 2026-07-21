@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPP Contribution Calculator — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .rates-note{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:12px 16px; font-size:0.82rem; color:var(--ink); margin-bottom:16px;}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field select{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:640px){.row2{grid-template-columns:1fr;}}
+  .scenario-title{font-family:var(--serif); font-size:1.05rem; margin-bottom:12px; color:var(--ink);}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .actions{display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;}
+
+  .results{margin-top:1px; display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line);}
+  @media (max-width:640px){.results{grid-template-columns:1fr;}}
+  .result-col{background:var(--paper-card); padding:18px;}
+  .result-col h3{font-family:var(--serif); font-size:1rem; margin:0 0 12px;}
+  .result-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed var(--line); font-size:0.88rem;}
+  .result-row:last-child{border-bottom:none;}
+  .result-row .val{font-family:var(--mono);}
+  .result-row.total{font-weight:700; border-top:2px solid var(--ink); border-bottom:none; margin-top:6px; padding-top:10px;}
+
+  .diff-box{background:var(--teal-soft); border:1px solid var(--teal); padding:16px 18px; margin-top:16px; border-radius:2px;}
+  .diff-box .big{font-family:var(--mono); font-size:1.6rem; color:var(--teal);}
+
+  .explainer{background:var(--paper-card); border:1px solid var(--line); padding:18px 20px; font-size:0.9rem; color:var(--ink-soft);}
+  .explainer h3{color:var(--ink); font-family:var(--serif); font-size:1rem; margin-top:0;}
+  .explainer ul{padding-left:20px;}
+  .explainer li{margin-bottom:8px;}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="kicker">Canada Daily Code — Field Tools</div>
+    <h1>CPP Contribution Calculator</h1>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not tax, legal, or financial advice.</strong> This tool calculates Canada Pension Plan (CPP) contributions only, using the published 2026 CRA rates and thresholds. It does <strong>not</strong> determine "the optimal" salary/dividend mix for your business — that depends on your personal tax bracket, province, the small business corporate tax rate, dividend tax credits, RRSP room, and how much you value CPP's retirement and disability benefits. Confirm any compensation decision with a licensed accountant before acting on it.
+</div>
+
+<div class="wrap">
+
+  <div class="section-head"><span class="no">No. 01</span><h2>Compare two salary scenarios</h2></div>
+  <div class="rates-note">
+    Using 2026 CRA figures: basic exemption $3,500 · CPP1 applies 5.95% (11.9% self-employed) on earnings between $3,500 and $74,600 · CPP2 applies 4% (8% self-employed) on earnings between $74,600 and $85,000. Employer and employee each pay these rates on employment income; a self-employed owner pays both halves.
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <div class="scenario-title">Scenario A</div>
+      <div class="field"><label for="salaryA">Annual salary (CAD)</label><input type="number" id="salaryA" min="0" step="500" value="60000"></div>
+      <div class="field"><label for="typeA">Payment type</label>
+        <select id="typeA">
+          <option value="employee">Employee (employer matches CPP)</option>
+          <option value="selfemployed">Self-employed / owner draws no T4</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="scenario-title">Scenario B</div>
+      <div class="field"><label for="salaryB">Annual salary (CAD)</label><input type="number" id="salaryB" min="0" step="500" value="40000"></div>
+      <div class="field"><label for="typeB">Payment type</label>
+        <select id="typeB">
+          <option value="employee">Employee (employer matches CPP)</option>
+          <option value="selfemployed">Self-employed / owner draws no T4</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions" style="margin-top:16px;">
+    <button class="btn" id="calcBtn">Calculate CPP contributions</button>
+  </div>
+
+  <div class="results" id="results" style="display:none;">
+    <div class="result-col">
+      <h3>Scenario A results</h3>
+      <div id="resultsA"></div>
+    </div>
+    <div class="result-col">
+      <h3>Scenario B results</h3>
+      <div id="resultsB"></div>
+    </div>
+  </div>
+
+  <div class="diff-box" id="diffBox" style="display:none;">
+    <div>Difference in total CPP contributions (both sides, A vs B):</div>
+    <div class="big" id="diffOut"></div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 02</span><h2>What this number does — and doesn't — tell you</h2></div>
+  <div class="explainer">
+    <h3>What a lower CPP contribution means</h3>
+    <p>Paying yourself less in T4 salary (and more in dividends instead) reduces or eliminates CPP contributions, which is real, immediate cash-flow savings. But that's only one side of the ledger:</p>
+    <ul>
+      <li><strong>Dividends aren't free of tax</strong> — they're taxed personally at dividend tax rates (which vary by province) after the corporation has already paid corporate tax on that income. The combined personal + corporate tax rate on dividends can be higher or lower than the tax on an equivalent salary, depending on your province and income level — this calculator does not model that comparison.</li>
+      <li><strong>Skipping CPP contributions reduces your future CPP retirement pension</strong> and your eligibility for CPP disability and survivor benefits — CPP isn't just a cost, it's a benefit you're opting out of.</li>
+      <li><strong>Salary (not dividends) creates RRSP contribution room</strong> and counts as earned income for other purposes (like childcare deduction limits).</li>
+      <li><strong>A "reasonable salary" may be required</strong> for other reasons — for example, some provincial or federal programs and lending decisions look at T4 income specifically.</li>
+    </ul>
+    <p>In short: this tool tells you the CPP cost difference precisely. It cannot tell you whether salary or dividends is better for your business overall — that's a personalized calculation your accountant should run with your specific numbers.</p>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> nothing you enter here is saved, sent anywhere, or tracked. This page runs entirely offline in your browser with no analytics and no network calls.</p>
+    <p>Built by Canada Daily Code as a free educational calculator. Not affiliated with the CRA or Service Canada. Rates and thresholds reflect 2026 published figures and change annually — verify current-year numbers before relying on this for payroll decisions. Always confirm compensation structure decisions with a licensed accountant.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const YMPE = 74600;
+  const BASIC_EXEMPTION = 3500;
+  const YAMPE = 85000;
+  const CPP1_RATE_EMPLOYEE = 0.0595;
+  const CPP2_RATE_EMPLOYEE = 0.04;
+
+  function calcCPP(salary, type){
+    const pensionable1 = Math.max(0, Math.min(salary, YMPE) - BASIC_EXEMPTION);
+    const pensionable2 = Math.max(0, Math.min(salary, YAMPE) - YMPE);
+
+    const isSelf = type === 'selfemployed';
+    const rate1 = CPP1_RATE_EMPLOYEE * (isSelf ? 2 : 1);
+    const rate2 = CPP2_RATE_EMPLOYEE * (isSelf ? 2 : 1);
+
+    const cpp1 = pensionable1 * rate1;
+    const cpp2 = pensionable2 * rate2;
+    const total = cpp1 + cpp2;
+
+    return { pensionable1, pensionable2, cpp1, cpp2, total, isSelf };
+  }
+
+  function fmtCAD(n){ return Number(n||0).toLocaleString('en-CA', {style:'currency', currency:'CAD', maximumFractionDigits:2}); }
+
+  function renderResult(container, r, label){
+    const perSideLabel = r.isSelf ? 'Total (you pay both sides)' : 'Employee side';
+    let html = `
+      <div class="result-row"><span>CPP1 pensionable earnings</span><span class="val">${fmtCAD(r.pensionable1)}</span></div>
+      <div class="result-row"><span>CPP2 pensionable earnings</span><span class="val">${fmtCAD(r.pensionable2)}</span></div>
+      <div class="result-row"><span>CPP1 contribution (${r.isSelf?'11.9%':'5.95%'})</span><span class="val">${fmtCAD(r.cpp1)}</span></div>
+      <div class="result-row"><span>CPP2 contribution (${r.isSelf?'8%':'4%'})</span><span class="val">${fmtCAD(r.cpp2)}</span></div>
+      <div class="result-row total"><span>${perSideLabel} total</span><span class="val">${fmtCAD(r.total)}</span></div>
+    `;
+    if(!r.isSelf){
+      html += `<div class="result-row"><span>Employer matches</span><span class="val">${fmtCAD(r.total)}</span></div>
+               <div class="result-row total"><span>Combined employer + employee</span><span class="val">${fmtCAD(r.total*2)}</span></div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', ()=>{
+    const salaryA = Number(document.getElementById('salaryA').value || 0);
+    const typeA = document.getElementById('typeA').value;
+    const salaryB = Number(document.getElementById('salaryB').value || 0);
+    const typeB = document.getElementById('typeB').value;
+
+    const rA = calcCPP(salaryA, typeA);
+    const rB = calcCPP(salaryB, typeB);
+
+    renderResult(document.getElementById('resultsA'), rA);
+    renderResult(document.getElementById('resultsB'), rB);
+    document.getElementById('results').style.display = 'grid';
+
+    const combinedA = rA.isSelf ? rA.total : rA.total*2;
+    const combinedB = rB.isSelf ? rB.total : rB.total*2;
+    const diff = combinedA - combinedB;
+    const diffEl = document.getElementById('diffOut');
+    diffEl.textContent = (diff >= 0 ? '+' : '−') + fmtCAD(Math.abs(diff)) + (diff >= 0 ? ' more in Scenario A' : ' less in Scenario A');
+    document.getElementById('diffBox').style.display = 'block';
+  });
+
+  document.getElementById('calcBtn').click();
+})();
+</script>
+
+</body>
+</html>
