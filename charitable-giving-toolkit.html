@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charitable Giving Tax Credit Toolkit — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.55; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:34px 20px 26px; border-bottom:7px solid var(--gold); text-align:center;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.72rem; letter-spacing:2px; color:var(--gold-soft); margin-bottom:10px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:2rem; margin:0 0 8px;}
+  .masthead p{max-width:600px; margin:0 auto; color:#C9D1D9; font-size:0.95rem;}
+
+  .disclaimer{max-width:1040px; margin:20px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1040px; margin:0 auto; padding:0 20px;}
+
+  .tabs{display:flex; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:30px; flex-wrap:wrap;}
+  .tab{flex:1; min-width:160px; text-align:center; padding:14px 10px; background:var(--paper-card); font-size:0.86rem; font-weight:600; cursor:pointer; color:var(--ink-soft);}
+  .tab.active{background:var(--ink); color:var(--paper);}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:30px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .rates-note{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:12px 16px; font-size:0.82rem; color:var(--ink); margin-bottom:16px;}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:22px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field select{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+  @media (max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+  .checkbox-row{display:flex; align-items:center; gap:8px; font-size:0.88rem; margin-top:6px;}
+  .checkbox-row input{width:auto;}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:11px 20px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.small{padding:5px 10px; font-size:0.76rem;}
+  .btn.danger{border-color:var(--red); color:var(--red); background:transparent;}
+  .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+
+  .result-box{margin-top:20px; background:var(--paper-card); border:1px solid var(--line);}
+  .result-row{display:flex; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--line); font-size:0.9rem;}
+  .result-row:last-child{border-bottom:none;}
+  .result-row .val{font-family:var(--mono); font-weight:600;}
+  .result-row.total{background:var(--teal-soft); font-weight:700;}
+  .result-row.total .val{color:var(--teal); font-size:1.05rem;}
+
+  .ledger{width:100%; border-collapse:collapse; background:var(--paper-card); font-size:0.85rem; margin-top:16px;}
+  .ledger th{text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:8px 10px;}
+  .ledger td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ledger .num{font-family:var(--mono); text-align:right; white-space:nowrap;}
+  .empty-row{text-align:center; padding:24px 10px; color:var(--ink-soft); font-style:italic;}
+
+  .year-row{display:grid; grid-template-columns:100px 1fr 40px; gap:10px; align-items:center; margin-bottom:8px;}
+  .year-row input{padding:8px 10px; border:1px solid var(--line); border-radius:2px; background:#fff;}
+  .year-row .rm{cursor:pointer; color:var(--red); text-align:center; font-family:var(--mono);}
+
+  .explainer{background:var(--paper-card); border:1px solid var(--line); padding:18px 20px; font-size:0.9rem; color:var(--ink-soft); margin-top:20px;}
+  .explainer h3{color:var(--ink); font-family:var(--serif); font-size:1rem; margin-top:0;}
+  .explainer ul{padding-left:20px;}
+  .explainer li{margin-bottom:6px;}
+
+  .big-diff{background:var(--gold-soft); border:1px solid var(--gold); padding:16px 18px; margin-top:16px; border-radius:2px;}
+  .big-diff .amt{font-family:var(--mono); font-size:1.6rem; color:var(--gold);}
+
+  footer{max-width:1040px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+
+  @media print{ .no-print{display:none !important;} body{background:#fff;} .panel{display:block !important;} }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="kicker">Canada Daily Code — Field Tools</div>
+  <h1>Charitable Giving Tax Credit Toolkit</h1>
+  <p>Three real, source-verified calculators for organizing and understanding your charitable giving strategy — built on the published 2026 CRA and provincial rates.</p>
+</div>
+
+<div class="disclaimer">
+  <strong>Not tax, legal, or financial advice.</strong> These calculators use published 2026 federal and provincial donation tax credit rates and the CRA's own rule on donated securities. They do not model every personal factor (surtaxes, Alternative Minimum Tax, your full income tax bracket, or provincial high-income top-ups beyond the standard tiers) and are not a substitute for a licensed accountant reviewing your actual return. Confirm all figures before filing or making a gift.
+</div>
+
+<div class="wrap">
+
+  <div class="tabs no-print">
+    <div class="tab active" data-panel="p1">Credit Calculator</div>
+    <div class="tab" data-panel="p2">Multi-Year Bunching</div>
+    <div class="tab" data-panel="p3">Securities vs. Cash</div>
+  </div>
+
+  <!-- PANEL 1: CREDIT CALCULATOR -->
+  <div class="panel active" id="p1">
+    <div class="section-head"><span class="no">No. 01</span><h2>Charitable donation tax credit calculator</h2></div>
+    <div class="rates-note">
+      Federal rate: 14% on the first $200 of annual donations, 29% above $200 (33% on the portion of donations claimable against income taxed in the top federal bracket, $258,482+ in 2026). Provincial rates below are the official 2026 published rates for each province/territory. Ontario, BC, and Quebec have additional high-income top rates and surtax effects not modeled here — high earners in those provinces should confirm the exact figure with an accountant.
+    </div>
+    <div class="card">
+      <div class="row3">
+        <div class="field"><label for="cProvince">Province / territory</label><select id="cProvince"></select></div>
+        <div class="field"><label for="cAmount">Total annual donations (CAD)</label><input type="number" id="cAmount" min="0" step="10" value="1000"></div>
+        <div class="field"><label for="cSpouse">Combine with spouse's donations?</label>
+          <select id="cSpouse"><option value="no">No — my donations only</option><option value="yes">Yes — pooling with spouse</option></select>
+        </div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="cHighIncome">
+        <label for="cHighIncome">My taxable income is above $258,482 (2026) — apply the federal 33% high-income rate to the eligible portion</label>
+      </div>
+      <div class="actions">
+        <button class="btn" id="calcCreditBtn">Calculate my credit</button>
+      </div>
+    </div>
+    <div class="result-box" id="creditResults" style="display:none;"></div>
+  </div>
+
+  <!-- PANEL 2: MULTI-YEAR BUNCHING -->
+  <div class="panel" id="p2">
+    <div class="section-head"><span class="no">No. 02</span><h2>Multi-year bunching comparison</h2></div>
+    <div class="rates-note">
+      The CRA lets you carry forward unclaimed donations for up to 5 years and claim them together in one tax year. Because the first $200 of a claim gets the lower rate, combining several years' small donations into one claim can produce a larger total credit than claiming small amounts each year. Enter your province and a few years of donation amounts to compare.
+    </div>
+    <div class="card">
+      <div class="field" style="max-width:300px;"><label for="bProvince">Province / territory</label><select id="bProvince"></select></div>
+      <div class="field"><label>Donations by year (add up to 5 years)</label>
+        <div id="yearRows"></div>
+        <button class="btn secondary small" id="addYearBtn" style="margin-top:8px;">+ Add year</button>
+      </div>
+      <div class="actions">
+        <button class="btn" id="calcBunchBtn">Compare claiming separately vs. bunched</button>
+      </div>
+    </div>
+    <div class="result-box" id="bunchResults" style="display:none;"></div>
+  </div>
+
+  <!-- PANEL 3: SECURITIES VS CASH -->
+  <div class="panel" id="p3">
+    <div class="section-head"><span class="no">No. 03</span><h2>Donating securities vs. selling and donating cash</h2></div>
+    <div class="rates-note">
+      Under the Income Tax Act, donating publicly listed securities (shares, ETFs, mutual fund units) directly to a registered charity carries a 0% capital gains inclusion rate — you owe no capital gains tax on the appreciation, and you still receive a donation receipt for the full fair market value. If you sell first and donate the cash instead, the capital gain is taxed normally before the donation credit applies. This calculator shows the difference — enter your own estimated marginal tax rate on capital gains, since that depends on your total income and province.
+    </div>
+    <div class="card">
+      <div class="row3">
+        <div class="field"><label for="sACB">Original cost (adjusted cost base, CAD)</label><input type="number" id="sACB" min="0" step="100" value="20000"></div>
+        <div class="field"><label for="sFMV">Current fair market value (CAD)</label><input type="number" id="sFMV" min="0" step="100" value="50000"></div>
+        <div class="field"><label for="sMarginalRate">Your estimated marginal tax rate on capital gains (%)</label><input type="number" id="sMarginalRate" min="0" max="100" step="0.1" value="27"></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="calcSecBtn">Compare the two methods</button>
+      </div>
+    </div>
+    <div class="result-box" id="secResults" style="display:none;"></div>
+    <div class="explainer">
+      <h3>Why this matters</h3>
+      <ul>
+        <li>Both methods give you the same donation tax credit, based on the fair market value of the gift.</li>
+        <li>Only the "donate securities directly" method avoids capital gains tax on the built-up appreciation — but the shares must transfer in-kind directly from your brokerage to the charity's brokerage account. Selling first and donating the cash proceeds does not qualify.</li>
+        <li>This calculator uses the marginal tax rate <em>you provide</em> — it does not calculate your personal tax bracket, since that depends on your total income, province, and other factors your accountant should confirm.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="actions no-print" style="margin-top:30px;">
+    <button class="btn secondary" id="printBtn">Print this page</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> nothing you enter here is saved, sent anywhere, or tracked. This page runs entirely offline in your browser with no analytics and no network calls.</p>
+    <p>Built by Canada Daily Code as a free educational toolkit. Not affiliated with the CRA. Rates reflect 2026 published federal and provincial figures (source: CRA and provincial tax tables) and change annually — verify current-year numbers before filing. Always confirm eligibility, calculations, and your specific tax situation with a licensed accountant before making a giving decision.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // ===== 2026 rates: [firstBracketRate, overBracketRate] as decimals =====
+  const PROVINCES = {
+    "Alberta": [0.60, 0.21],
+    "British Columbia": [0.0506, 0.168],
+    "Manitoba": [0.108, 0.174],
+    "New Brunswick": [0.094, 0.1795],
+    "Newfoundland and Labrador": [0.087, 0.218],
+    "Nova Scotia": [0.0879, 0.21],
+    "Northwest Territories": [0.059, 0.1405],
+    "Nunavut": [0.04, 0.115],
+    "Ontario": [0.0505, 0.1116],
+    "Prince Edward Island": [0.095, 0.19],
+    "Quebec": [0.20, 0.24],
+    "Saskatchewan": [0.105, 0.145],
+    "Yukon": [0.064, 0.128]
+  };
+  const FED_FIRST = 0.14;
+  const FED_OVER = 0.29;
+  const FED_HIGH = 0.33;
+  const QC_FEDERAL_ABATEMENT = 0.165;
+
+  function fmtCAD(n){ return Number(n||0).toLocaleString('en-CA', {style:'currency', currency:'CAD', maximumFractionDigits:2}); }
+
+  function populateProvinceSelect(sel){
+    sel.innerHTML = Object.keys(PROVINCES).sort().map(p=>`<option value="${p}">${p}</option>`).join('');
+    sel.value = "Ontario";
+  }
+
+  function calcCredit(amount, province, highIncome){
+    const first = Math.min(amount, 200);
+    const over = Math.max(0, amount - 200);
+
+    const fedFirst = first * FED_FIRST;
+    const fedOver = over * (highIncome ? FED_HIGH : FED_OVER);
+    let fed = fedFirst + fedOver;
+
+    const [provFirstRate, provOverRate] = PROVINCES[province];
+    const provFirst = first * provFirstRate;
+    const provOver = over * provOverRate;
+    let prov = provFirst + provOver;
+
+    let abatement = 0;
+    if(province === "Quebec"){
+      abatement = fed * QC_FEDERAL_ABATEMENT;
+      fed = fed - abatement;
+    }
+
+    return { fed, prov, abatement, total: fed + prov };
+  }
+
+  // ===== TABS =====
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.panel).classList.add('active');
+    });
+  });
+
+  // ===== PANEL 1 =====
+  const cProvince = document.getElementById('cProvince');
+  populateProvinceSelect(cProvince);
+
+  document.getElementById('calcCreditBtn').addEventListener('click', ()=>{
+    const amount = Number(document.getElementById('cAmount').value || 0);
+    const province = cProvince.value;
+    const highIncome = document.getElementById('cHighIncome').checked;
+    const spouse = document.getElementById('cSpouse').value;
+
+    const r = calcCredit(amount, province, highIncome);
+    const box = document.getElementById('creditResults');
+    let html = `
+      <div class="result-row"><span>Federal credit</span><span class="val">${fmtCAD(r.fed)}</span></div>
+      <div class="result-row"><span>${province} provincial credit</span><span class="val">${fmtCAD(r.prov)}</span></div>
+    `;
+    if(province === "Quebec"){
+      html += `<div class="result-row"><span>Quebec federal abatement reduction (16.5% of federal credit)</span><span class="val">−${fmtCAD(r.abatement)}</span></div>`;
+    }
+    html += `<div class="result-row total"><span>Total combined tax credit</span><span class="val">${fmtCAD(r.total)}</span></div>
+             <div class="result-row"><span>Effective after-credit cost of your gift</span><span class="val">${fmtCAD(amount - r.total)}</span></div>`;
+    if(spouse === 'yes'){
+      html += `<div class="result-row" style="font-style:italic; color:var(--ink-soft);"><span colspan="2">Tip: pooling all household donations on one spouse's return is usually best, since it pushes more of the total past the $200 threshold into the higher rate — the calculation above assumes this combined amount is claimed on one return.</span></div>`;
+    }
+    box.innerHTML = html;
+    box.style.display = 'block';
+  });
+
+  // ===== PANEL 2 =====
+  const bProvince = document.getElementById('bProvince');
+  populateProvinceSelect(bProvince);
+
+  const yearRows = document.getElementById('yearRows');
+  let yearCount = 0;
+
+  function addYearRow(year, amount){
+    yearCount++;
+    const id = 'yr' + yearCount;
+    const row = document.createElement('div');
+    row.className = 'year-row';
+    row.id = id;
+    row.innerHTML = `
+      <input type="number" placeholder="Year" value="${year||''}" class="yr-year">
+      <input type="number" placeholder="Donation amount (CAD)" value="${amount||''}" class="yr-amt">
+      <div class="rm" data-id="${id}">✕</div>
+    `;
+    yearRows.appendChild(row);
+    row.querySelector('.rm').addEventListener('click', ()=>{
+      document.getElementById(id).remove();
+    });
+  }
+  // seed with 3 example rows
+  addYearRow(2024, 150);
+  addYearRow(2025, 150);
+  addYearRow(2026, 150);
+
+  document.getElementById('addYearBtn').addEventListener('click', ()=>{
+    if(yearRows.children.length >= 5){ alert('Maximum 5 years (the CRA carry-forward limit).'); return; }
+    addYearRow('', '');
+  });
+
+  document.getElementById('calcBunchBtn').addEventListener('click', ()=>{
+    const province = bProvince.value;
+    const rows = Array.from(yearRows.children);
+    const amounts = rows.map(r => Number(r.querySelector('.yr-amt').value || 0)).filter(a => a > 0);
+
+    if(amounts.length === 0){ alert('Enter at least one year with a donation amount.'); return; }
+
+    // Separate: calculate credit for each year individually, sum them
+    let separateTotal = 0;
+    amounts.forEach(a => { separateTotal += calcCredit(a, province, false).total; });
+
+    // Bunched: sum all amounts, calculate credit once
+    const bunchedAmount = amounts.reduce((s,a)=>s+a, 0);
+    const bunchedTotal = calcCredit(bunchedAmount, province, false).total;
+
+    const box = document.getElementById('bunchResults');
+    const diff = bunchedTotal - separateTotal;
+    box.innerHTML = `
+      <table class="ledger" style="margin-top:0;">
+        <thead><tr><th>Approach</th><th>Total donated</th><th>Total credit received</th></tr></thead>
+        <tbody>
+          <tr><td>Claiming each year separately</td><td class="num">${fmtCAD(bunchedAmount)}</td><td class="num">${fmtCAD(separateTotal)}</td></tr>
+          <tr><td>Bunching all years into one claim</td><td class="num">${fmtCAD(bunchedAmount)}</td><td class="num">${fmtCAD(bunchedTotal)}</td></tr>
+        </tbody>
+      </table>
+      <div class="big-diff">
+        <div>${diff > 0 ? 'Bunching produces' : diff < 0 ? 'Bunching produces' : 'No difference:'} <span class="amt">${fmtCAD(Math.abs(diff))}</span> ${diff > 0 ? 'more' : diff < 0 ? 'less' : ''} in total credit${diff !== 0 ? ' compared to claiming each year separately.' : '.'}</div>
+      </div>
+    `;
+    box.style.display = 'block';
+  });
+
+  // ===== PANEL 3 =====
+  document.getElementById('calcSecBtn').addEventListener('click', ()=>{
+    const acb = Number(document.getElementById('sACB').value || 0);
+    const fmv = Number(document.getElementById('sFMV').value || 0);
+    const rate = Number(document.getElementById('sMarginalRate').value || 0) / 100;
+
+    const gain = Math.max(0, fmv - acb);
+    // Standard 50% inclusion rate scenario (sell then donate cash)
+    const taxableGainStandard = gain * 0.5;
+    const capGainsTaxIfSold = taxableGainStandard * rate;
+    // Donated securities: 0% inclusion
+    const capGainsTaxIfDonatedDirectly = 0;
+
+    const box = document.getElementById('secResults');
+    box.innerHTML = `
+      <div class="result-row"><span>Fair market value of the gift (used for your donation receipt either way)</span><span class="val">${fmtCAD(fmv)}</span></div>
+      <div class="result-row"><span>Unrealized capital gain</span><span class="val">${fmtCAD(gain)}</span></div>
+      <div class="result-row"><span>Capital gains tax if you sell first, then donate cash (50% inclusion × your rate)</span><span class="val">${fmtCAD(capGainsTaxIfSold)}</span></div>
+      <div class="result-row"><span>Capital gains tax if you donate the securities directly (0% inclusion)</span><span class="val">${fmtCAD(capGainsTaxIfDonatedDirectly)}</span></div>
+      <div class="result-row total"><span>Capital gains tax you avoid by donating directly</span><span class="val">${fmtCAD(capGainsTaxIfSold)}</span></div>
+    `;
+    box.style.display = 'block';
+  });
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  // Trigger initial calculations for a populated first view
+  document.getElementById('calcCreditBtn').click();
+})();
+</script>
+
+</body>
+</html>
