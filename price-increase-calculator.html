@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Increase Break-Even Calculator — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:960px; margin:0 auto; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+  .masthead .file-count{font-family:var(--mono); font-size:0.85rem; opacity:0.85;}
+
+  .disclaimer{max-width:960px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:960px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field select{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:620px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.small{padding:5px 10px; font-size:0.76rem;}
+  .btn.danger{border-color:var(--red); color:var(--red); background:transparent;}
+  .actions{display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;}
+
+  .result-box{margin-top:20px; background:var(--paper-card); border:1px solid var(--line);}
+  .result-row{display:flex; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--line); font-size:0.9rem;}
+  .result-row:last-child{border-bottom:none;}
+  .result-row .val{font-family:var(--mono); font-weight:600;}
+  .result-row.total{background:var(--teal-soft); font-weight:700;}
+  .result-row.total .val{color:var(--teal); font-size:1.05rem;}
+
+  .big-callout{background:var(--gold-soft); border:1px solid var(--gold); padding:16px 18px; margin-top:16px; border-radius:2px;}
+  .big-callout .amt{font-family:var(--mono); font-size:1.6rem; color:var(--gold);}
+
+  .ledger{width:100%; border-collapse:collapse; background:var(--paper-card); font-size:0.85rem;}
+  .ledger th{text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:8px 10px;}
+  .ledger td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ledger tr:hover td{background:var(--teal-soft);}
+  .num{font-family:var(--mono); white-space:nowrap; text-align:right;}
+  .empty-row{text-align:center; padding:30px 10px; color:var(--ink-soft); font-style:italic;}
+  .tag{display:inline-block; font-family:var(--mono); font-size:0.68rem; padding:3px 7px; border-radius:2px; text-transform:uppercase;}
+  .tag.win{background:var(--teal-soft); color:var(--teal); border:1px solid var(--teal);}
+  .tag.loss{background:var(--red-soft); color:var(--red); border:1px solid var(--red);}
+  .tag.pending{background:#EDEDED; color:var(--ink-soft); border:1px solid var(--line);}
+
+  footer{max-width:960px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+
+  @media print{ .no-print{display:none !important;} body{background:#fff;} }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="kicker">Canada Daily Code — Field Tools</div>
+      <h1>Price Increase Break-Even Calculator</h1>
+    </div>
+    <div class="file-count">FILE LOG · <span id="entryCount">0</span> tests tracked</div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not financial or business advice.</strong> This tool does the break-even arithmetic for a price change — it does not predict how your specific customers will actually react, since that depends on your market, competitors, and product. Use it to know your numbers before you test, then track the real result. Confirm significant pricing decisions with your own judgment and, where relevant, an accountant.
+</div>
+
+<div class="wrap">
+
+  <div class="section-head"><span class="no">No. 01</span><h2>Before you raise your price — know your break-even</h2></div>
+  <div class="card">
+    <div class="row3">
+      <div class="field"><label for="oldPrice">Current price (CAD, per unit / customer / job)</label><input type="number" id="oldPrice" min="0" step="0.01" value="100"></div>
+      <div class="field"><label for="oldVolume">Current volume (units / customers per period)</label><input type="number" id="oldVolume" min="0" step="1" value="50"></div>
+      <div class="field"><label for="varCost">Variable cost per unit (optional, CAD)</label><input type="number" id="varCost" min="0" step="0.01" value="0"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="increasePct">Price increase (%)</label><input type="number" id="increasePct" min="0" step="1" value="10"></div>
+      <div class="field"><label for="newPriceDirect">— or enter the new price directly (CAD, overrides % above)</label><input type="number" id="newPriceDirect" min="0" step="0.01" placeholder="optional"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="calcBtn">Calculate my break-even</button>
+    </div>
+  </div>
+  <div class="result-box" id="calcResults" style="display:none;"></div>
+
+  <div class="section-head no-print"><span class="no">No. 02</span><h2>Track your real test</h2></div>
+  <div class="card no-print">
+    <div class="row3">
+      <div class="field"><label for="tDate">Date you raised the price</label><input type="date" id="tDate"></div>
+      <div class="field"><label for="tProduct">Product / service</label><input type="text" id="tProduct" placeholder="e.g. Standard consulting package"></div>
+      <div class="field"><label for="tDuration">Test period</label><input type="text" id="tDuration" placeholder="e.g. 4 weeks"></div>
+    </div>
+    <div class="row3">
+      <div class="field"><label for="tOldPrice">Old price (CAD)</label><input type="number" id="tOldPrice" min="0" step="0.01"></div>
+      <div class="field"><label for="tNewPrice">New price (CAD)</label><input type="number" id="tNewPrice" min="0" step="0.01"></div>
+      <div class="field"><label for="tOldVolume">Volume before (per period)</label><input type="number" id="tOldVolume" min="0" step="1"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="tNewVolume">Volume during test (actual result — fill in after)</label><input type="number" id="tNewVolume" min="0" step="1" placeholder="leave blank until test is done"></div>
+      <div class="field"><label for="tNotes">Notes (what customers said, anything you noticed)</label><input type="text" id="tNotes" placeholder="optional"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="saveTestBtn">Save test</button>
+      <button class="btn secondary" id="clearTestBtn">Clear form</button>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 03</span><h2>Your test log</h2></div>
+  <div style="overflow-x:auto;">
+    <table class="ledger">
+      <thead><tr><th>Date</th><th>Product</th><th>Old → New price</th><th>Volume before → during</th><th>Result</th><th class="no-print">—</th></tr></thead>
+      <tbody id="testBody"><tr><td colspan="6" class="empty-row">No tests logged yet — raise a price and track it above.</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="actions no-print" style="margin-top:18px;">
+    <button class="btn secondary" id="exportBtn">Export CSV</button>
+    <button class="btn secondary" id="printBtn">Print report</button>
+    <button class="btn danger" id="wipeBtn">Erase all data</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> everything stays in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required. Export CSV to keep a backup before clearing browser data or switching devices.</p>
+    <p>Built by Canada Daily Code as a free, offline calculator and tracker. Not affiliated with any pricing consultancy. The break-even math is standard arithmetic (revenue = price × volume, adjusted for variable cost if entered) — always apply your own judgment about your market before changing prices.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'cdc-price-test-log-v1';
+
+  function loadTests(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch(e){ return []; }
+  }
+  function saveTests(t){ localStorage.setItem(STORAGE_KEY, JSON.stringify(t)); }
+
+  let tests = loadTests();
+
+  function fmtCAD(n){ return Number(n||0).toLocaleString('en-CA', {style:'currency', currency:'CAD', maximumFractionDigits:2}); }
+  function fmtPct(n){ return Number(n||0).toLocaleString('en-CA', {maximumFractionDigits:1}) + '%'; }
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+
+  document.getElementById('calcBtn').addEventListener('click', ()=>{
+    const oldPrice = Number(document.getElementById('oldPrice').value || 0);
+    const oldVolume = Number(document.getElementById('oldVolume').value || 0);
+    const varCost = Number(document.getElementById('varCost').value || 0);
+    const increasePct = Number(document.getElementById('increasePct').value || 0);
+    const newPriceDirect = document.getElementById('newPriceDirect').value;
+    const newPrice = newPriceDirect !== '' ? Number(newPriceDirect) : oldPrice * (1 + increasePct/100);
+
+    const oldMargin = oldPrice - varCost;
+    const newMargin = newPrice - varCost;
+    const oldProfit = oldMargin * oldVolume;
+    const oldRevenue = oldPrice * oldVolume;
+    const newRevenueSameVolume = newPrice * oldVolume;
+    const newProfitSameVolume = newMargin * oldVolume;
+
+    const breakEvenVolume = newMargin > 0 ? oldProfit / newMargin : Infinity;
+    const maxVolumeLossPct = oldVolume > 0 ? Math.max(0, (1 - breakEvenVolume / oldVolume) * 100) : 0;
+    const maxCustomersCanLose = Math.max(0, oldVolume - breakEvenVolume);
+
+    const box = document.getElementById('calcResults');
+    box.innerHTML = `
+      <div class="result-row"><span>New price</span><span class="val">${fmtCAD(newPrice)} <span style="color:var(--ink-soft); font-weight:400;">(+${fmtPct(((newPrice/oldPrice)-1)*100)})</span></span></div>
+      <div class="result-row"><span>Revenue at current volume, old price</span><span class="val">${fmtCAD(oldRevenue)}</span></div>
+      <div class="result-row"><span>Revenue at current volume, new price</span><span class="val">${fmtCAD(newRevenueSameVolume)}</span></div>
+      ${varCost > 0 ? `
+      <div class="result-row"><span>Profit at current volume, old price</span><span class="val">${fmtCAD(oldProfit)}</span></div>
+      <div class="result-row"><span>Profit at current volume, new price</span><span class="val">${fmtCAD(newProfitSameVolume)}</span></div>
+      ` : ''}
+      <div class="result-row total"><span>Break-even volume needed at new price</span><span class="val">${breakEvenVolume.toFixed(1)} units</span></div>
+      <div class="result-row total"><span>You can lose up to</span><span class="val">${maxCustomersCanLose.toFixed(1)} customers (${fmtPct(maxVolumeLossPct)}) and still come out even</span></div>
+    `;
+    box.style.display = 'block';
+  });
+  document.getElementById('calcBtn').click();
+
+  const els = {
+    tDate: document.getElementById('tDate'), tProduct: document.getElementById('tProduct'),
+    tDuration: document.getElementById('tDuration'), tOldPrice: document.getElementById('tOldPrice'),
+    tNewPrice: document.getElementById('tNewPrice'), tOldVolume: document.getElementById('tOldVolume'),
+    tNewVolume: document.getElementById('tNewVolume'), tNotes: document.getElementById('tNotes'),
+    saveTestBtn: document.getElementById('saveTestBtn'), clearTestBtn: document.getElementById('clearTestBtn'),
+    testBody: document.getElementById('testBody'), entryCount: document.getElementById('entryCount'),
+    exportBtn: document.getElementById('exportBtn'), printBtn: document.getElementById('printBtn'),
+    wipeBtn: document.getElementById('wipeBtn'),
+  };
+
+  const today = new Date().toISOString().slice(0,10);
+  els.tDate.value = today;
+
+  function renderTests(){
+    if(tests.length === 0){
+      els.testBody.innerHTML = '<tr><td colspan="6" class="empty-row">No tests logged yet — raise a price and track it above.</td></tr>';
+    } else {
+      els.testBody.innerHTML = tests.slice().sort((a,b)=> b.date.localeCompare(a.date)).map(t=>{
+        const oldRev = t.oldPrice * t.oldVolume;
+        let resultHtml = '<span class="tag pending">Pending</span>';
+        if(t.newVolume !== null && t.newVolume !== '' && !isNaN(t.newVolume)){
+          const newRev = t.newPrice * Number(t.newVolume);
+          const diff = newRev - oldRev;
+          resultHtml = `<span class="tag ${diff >= 0 ? 'win' : 'loss'}">${diff >= 0 ? '+' : '−'}${fmtCAD(Math.abs(diff))} revenue</span>`;
+        }
+        return `<tr>
+          <td>${t.date}</td><td>${escapeHtml(t.product)}</td>
+          <td>${fmtCAD(t.oldPrice)} → ${fmtCAD(t.newPrice)}</td>
+          <td>${t.oldVolume} → ${t.newVolume !== null && t.newVolume !== '' ? t.newVolume : '—'}</td>
+          <td>${resultHtml}</td>
+          <td class="no-print"><button class="btn small danger" data-id="${t.id}">Delete</button></td>
+        </tr>`;
+      }).join('');
+      els.testBody.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          tests = tests.filter(t=> String(t.id) !== btn.dataset.id);
+          saveTests(tests); renderTests();
+        });
+      });
+    }
+    els.entryCount.textContent = tests.length;
+  }
+
+  els.saveTestBtn.addEventListener('click', ()=>{
+    if(!els.tProduct.value.trim() || !els.tOldPrice.value || !els.tNewPrice.value || !els.tOldVolume.value){
+      alert('Please fill in product, old price, new price, and volume before.'); return;
+    }
+    tests.push({
+      id: Date.now(), date: els.tDate.value || today, product: els.tProduct.value.trim(),
+      duration: els.tDuration.value.trim(), oldPrice: Number(els.tOldPrice.value),
+      newPrice: Number(els.tNewPrice.value), oldVolume: Number(els.tOldVolume.value),
+      newVolume: els.tNewVolume.value === '' ? null : Number(els.tNewVolume.value),
+      notes: els.tNotes.value.trim()
+    });
+    saveTests(tests);
+    els.tProduct.value=''; els.tDuration.value=''; els.tOldPrice.value=''; els.tNewPrice.value='';
+    els.tOldVolume.value=''; els.tNewVolume.value=''; els.tNotes.value=''; els.tDate.value = today;
+    renderTests();
+  });
+  els.clearTestBtn.addEventListener('click', ()=>{
+    els.tProduct.value=''; els.tDuration.value=''; els.tOldPrice.value=''; els.tNewPrice.value='';
+    els.tOldVolume.value=''; els.tNewVolume.value=''; els.tNotes.value=''; els.tDate.value = today;
+  });
+
+  function csvSafe(str){
+    const s = (str || '').toString().replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }
+
+  els.exportBtn.addEventListener('click', ()=>{
+    if(tests.length === 0){ alert('No tests to export yet.'); return; }
+    const header = ['Date','Product','Test Duration','Old Price','New Price','Volume Before','Volume During','Notes'];
+    const lines = [header.join(',')];
+    tests.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{
+      lines.push([t.date, csvSafe(t.product), csvSafe(t.duration), t.oldPrice, t.newPrice, t.oldVolume, t.newVolume!==null?t.newVolume:'', csvSafe(t.notes)].join(','));
+    });
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'price-test-log-' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  els.printBtn.addEventListener('click', ()=> window.print());
+
+  els.wipeBtn.addEventListener('click', ()=>{
+    if(confirm('This will permanently delete every test stored in this browser. Export a CSV first if you want to keep a copy. Continue?')){
+      tests = [];
+      saveTests(tests);
+      renderTests();
+    }
+  });
+
+  renderTests();
+})();
+</script>
+
+</body>
+</html>
