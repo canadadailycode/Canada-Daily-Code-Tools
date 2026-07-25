@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>30-Day Problem Validation Tracker — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:960px; margin:0 auto; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+  .masthead .file-count{font-family:var(--mono); font-size:0.85rem; opacity:0.85;}
+
+  .disclaimer{max-width:960px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:960px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .prompt-box{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:14px 18px; font-size:0.9rem; margin-bottom:16px;}
+  .prompt-box strong{color:var(--gold);}
+
+  .commit-card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative; margin-bottom:20px;}
+  .commit-card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field textarea{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:620px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .dashboard{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:20px;}
+  .stat{background:var(--paper-card); padding:16px 14px;}
+  .stat .label{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-soft); margin-bottom:6px;}
+  .stat .value{font-family:var(--mono); font-size:1.3rem; color:var(--ink);}
+  .stat.stamp{background:var(--gold-soft);}
+  .stat.stamp .value{color:var(--gold);}
+
+  .progress-bar{background:#fff; border:1px solid var(--line); height:24px; border-radius:2px; overflow:hidden; margin-bottom:20px;}
+  .progress-fill{background:var(--teal); height:100%; display:flex; align-items:center; justify-content:flex-end; color:#fff; font-family:var(--mono); font-size:0.72rem; padding-right:8px; transition:width 0.3s;}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.small{padding:5px 10px; font-size:0.76rem;}
+  .btn.danger{border-color:var(--red); color:var(--red); background:transparent;}
+  .actions{display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;}
+
+  .ledger{width:100%; border-collapse:collapse; background:var(--paper-card); font-size:0.86rem;}
+  .ledger th{text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:8px 10px;}
+  .ledger td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ledger tr:hover td{background:var(--teal-soft);}
+  .num{font-family:var(--mono); white-space:nowrap; text-align:right;}
+  .empty-row{text-align:center; padding:30px 10px; color:var(--ink-soft); font-style:italic;}
+  .tag{display:inline-block; font-family:var(--mono); font-size:0.68rem; padding:3px 7px; border-radius:2px; text-transform:uppercase;}
+  .tag.paid{background:var(--teal-soft); color:var(--teal); border:1px solid var(--teal);}
+  .tag.nopay{background:#EDEDED; color:var(--ink-soft); border:1px solid var(--line);}
+
+  footer{max-width:960px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+
+  @media print{ .no-print{display:none !important;} body{background:#fff;} }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="kicker">Canada Daily Code — Field Tools</div>
+      <h1>30-Day Problem Validation Tracker</h1>
+    </div>
+    <div class="file-count">FILE LOG · <span id="entryCount">0</span> daily entries</div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not business or financial advice.</strong> This is a simple organizing tool for tracking whether real customers pay for a problem you're solving. It doesn't judge your idea, predict success, or replace real market research and professional advice for significant business decisions.
+</div>
+
+<div class="wrap">
+
+  <div class="prompt-box">
+    <strong>The point of this tracker:</strong> for 30 days, log actions and paying customers only — not how excited or passionate you feel about the idea. Passion is not tracked here on purpose. If real people pay real money, that's the signal that matters.
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 01</span><h2>Set your commitment</h2></div>
+  <div class="commit-card no-print">
+    <div class="field"><label for="cProblem">The boring problem you're solving (one sentence)</label><input type="text" id="cProblem" placeholder="e.g. Small landscaping companies lose track of which clients still owe invoices"></div>
+    <div class="row2">
+      <div class="field"><label for="cStartDate">Start date</label><input type="date" id="cStartDate"></div>
+      <div class="field"><label for="cWho">Who already pays for something like this today?</label><input type="text" id="cWho" placeholder="e.g. Small landscaping business owners using spreadsheets"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="setCommitBtn">Start my 30 days</button>
+    </div>
+  </div>
+
+  <div id="dashboardArea" style="display:none;">
+    <div class="section-head"><span class="no">No. 02</span><h2>Day <span id="dayNumber">1</span> of 30</h2></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:3%;">1 / 30 days</div></div>
+    <div class="dashboard">
+      <div class="stat"><div class="label">Days with an action logged</div><div class="value" id="statDaysActive">0</div></div>
+      <div class="stat stamp"><div class="label">Real paying customers</div><div class="value" id="statPaid">0</div></div>
+      <div class="stat"><div class="label">Total revenue collected</div><div class="value" id="statRevenue">$0</div></div>
+      <div class="stat"><div class="label">People contacted</div><div class="value" id="statContacted">0</div></div>
+    </div>
+
+    <div class="section-head no-print"><span class="no">No. 03</span><h2>Log today's action</h2></div>
+    <div class="commit-card no-print">
+      <div class="row3">
+        <div class="field"><label for="lDate">Date</label><input type="date" id="lDate"></div>
+        <div class="field"><label for="lContacted">People you contacted about it today</label><input type="number" id="lContacted" min="0" step="1" value="0"></div>
+        <div class="field"><label for="lPaid">Did someone pay you today?</label>
+          <select id="lPaid"><option value="no">No</option><option value="yes">Yes</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="lAmount">Amount paid (CAD, if any)</label><input type="number" id="lAmount" min="0" step="0.01" value="0"></div>
+        <div class="field"><label for="lNotes">What you actually did today (one line)</label><input type="text" id="lNotes" placeholder="e.g. Called 3 landscaping companies, one asked for a demo"></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="saveLogBtn">Save today's entry</button>
+        <button class="btn secondary" id="clearLogBtn">Clear form</button>
+      </div>
+    </div>
+
+    <div class="section-head"><span class="no">No. 04</span><h2>Your 30-day log</h2></div>
+    <div style="overflow-x:auto;">
+      <table class="ledger">
+        <thead><tr><th>Date</th><th>Day #</th><th>Contacted</th><th>Payment</th><th>Notes</th><th class="no-print">—</th></tr></thead>
+        <tbody id="logBody"><tr><td colspan="6" class="empty-row">No entries yet — log your first day above.</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="actions no-print" style="margin-top:18px;">
+      <button class="btn secondary" id="exportBtn">Export CSV</button>
+      <button class="btn secondary" id="printBtn">Print report</button>
+      <button class="btn danger" id="wipeBtn">Erase all data / start over</button>
+    </div>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> everything stays in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required. Export CSV to keep a backup before clearing browser data or switching devices.</p>
+    <p>Built by Canada Daily Code as a free, offline tool for founders testing a real problem before judging it by how they feel.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'cdc-30day-tracker-v1';
+
+  function loadData(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
+    catch(e){ return null; }
+  }
+  function saveData(d){ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
+  let data = loadData(); // {problem, startDate, who, log:[]}
+
+  const today = new Date().toISOString().slice(0,10);
+
+  function fmtCAD(n){ return Number(n||0).toLocaleString('en-CA', {style:'currency', currency:'CAD', maximumFractionDigits:2}); }
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+  function dayNumberFor(dateStr, startStr){
+    const d1 = new Date(startStr + 'T00:00:00');
+    const d2 = new Date(dateStr + 'T00:00:00');
+    return Math.floor((d2 - d1) / 86400000) + 1;
+  }
+
+  function showDashboard(){
+    document.getElementById('dashboardArea').style.display = 'block';
+    document.querySelector('.commit-card.no-print').closest('.no-print') && null;
+    document.getElementById('lDate').value = today;
+    render();
+  }
+
+  function render(){
+    if(!data) return;
+    const currentDay = Math.min(30, Math.max(1, dayNumberFor(today, data.startDate)));
+    document.getElementById('dayNumber').textContent = currentDay;
+    const pct = Math.min(100, (currentDay/30)*100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressFill').textContent = currentDay + ' / 30 days';
+
+    const log = data.log || [];
+    if(log.length === 0){
+      document.getElementById('logBody').innerHTML = '<tr><td colspan="6" class="empty-row">No entries yet — log your first day above.</td></tr>';
+    } else {
+      document.getElementById('logBody').innerHTML = log.slice().sort((a,b)=> b.date.localeCompare(a.date)).map(e=>`
+        <tr>
+          <td>${e.date}</td><td>${dayNumberFor(e.date, data.startDate)}</td>
+          <td class="num">${e.contacted}</td>
+          <td><span class="tag ${e.paid==='yes' ? 'paid':'nopay'}">${e.paid==='yes' ? fmtCAD(e.amount) : 'No payment'}</span></td>
+          <td>${escapeHtml(e.notes)}</td>
+          <td class="no-print"><button class="btn small danger" data-id="${e.id}">Delete</button></td>
+        </tr>`).join('');
+      document.querySelectorAll('#logBody button[data-id]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          data.log = data.log.filter(e=> String(e.id) !== btn.dataset.id);
+          saveData(data); render();
+        });
+      });
+    }
+
+    document.getElementById('entryCount').textContent = log.length;
+    document.getElementById('statDaysActive').textContent = new Set(log.map(e=>e.date)).size;
+    document.getElementById('statPaid').textContent = log.filter(e=> e.paid === 'yes').length;
+    document.getElementById('statRevenue').textContent = fmtCAD(log.reduce((s,e)=> s + (e.paid==='yes' ? Number(e.amount||0) : 0), 0));
+    document.getElementById('statContacted').textContent = log.reduce((s,e)=> s + Number(e.contacted||0), 0);
+  }
+
+  document.getElementById('setCommitBtn').addEventListener('click', ()=>{
+    const problem = document.getElementById('cProblem').value.trim();
+    const startDate = document.getElementById('cStartDate').value || today;
+    const who = document.getElementById('cWho').value.trim();
+    if(!problem){ alert('Please describe the problem you\'re solving.'); return; }
+    data = { problem, startDate, who, log: (data && data.log) || [] };
+    saveData(data);
+    showDashboard();
+  });
+
+  document.getElementById('saveLogBtn').addEventListener('click', ()=>{
+    const lDate = document.getElementById('lDate').value || today;
+    const contacted = Number(document.getElementById('lContacted').value || 0);
+    const paid = document.getElementById('lPaid').value;
+    const amount = Number(document.getElementById('lAmount').value || 0);
+    const notes = document.getElementById('lNotes').value.trim();
+    data.log.push({ id: Date.now(), date: lDate, contacted, paid, amount, notes });
+    saveData(data);
+    document.getElementById('lContacted').value = 0;
+    document.getElementById('lPaid').value = 'no';
+    document.getElementById('lAmount').value = 0;
+    document.getElementById('lNotes').value = '';
+    document.getElementById('lDate').value = today;
+    render();
+  });
+  document.getElementById('clearLogBtn').addEventListener('click', ()=>{
+    document.getElementById('lContacted').value = 0;
+    document.getElementById('lPaid').value = 'no';
+    document.getElementById('lAmount').value = 0;
+    document.getElementById('lNotes').value = '';
+    document.getElementById('lDate').value = today;
+  });
+
+  function csvSafe(str){
+    const s = (str || '').toString().replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    if(!data || data.log.length === 0){ alert('No entries to export yet.'); return; }
+    const lines = [`Problem: ${csvSafe(data.problem)}`, `Start date: ${data.startDate}`, `Who pays today: ${csvSafe(data.who)}`, ''];
+    lines.push(['Date','Day #','Contacted','Paid','Amount','Notes'].join(','));
+    data.log.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
+      lines.push([e.date, dayNumberFor(e.date, data.startDate), e.contacted, e.paid, e.amount, csvSafe(e.notes)].join(','));
+    });
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = '30-day-validation-log-' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  document.getElementById('wipeBtn').addEventListener('click', ()=>{
+    if(confirm('This will permanently delete your commitment and every logged day. Export a CSV first if you want to keep a copy. Continue?')){
+      data = null;
+      localStorage.removeItem(STORAGE_KEY);
+      document.getElementById('dashboardArea').style.display = 'none';
+      document.getElementById('cProblem').value = '';
+      document.getElementById('cWho').value = '';
+      document.getElementById('cStartDate').value = '';
+    }
+  });
+
+  document.getElementById('cStartDate').value = today;
+
+  if(data && data.problem){
+    document.getElementById('cProblem').value = data.problem;
+    document.getElementById('cWho').value = data.who;
+    document.getElementById('cStartDate').value = data.startDate;
+    showDashboard();
+  }
+})();
+</script>
+
+</body>
+</html>
