@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>No-Ask Relationship Tracker — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+  .masthead .file-count{font-family:var(--mono); font-size:0.85rem; opacity:0.85;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .prompt-box{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:14px 18px; font-size:0.9rem; margin-bottom:16px;}
+  .prompt-box strong{color:var(--gold);}
+
+  .dashboard{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .stat{background:var(--paper-card); padding:16px 14px;}
+  .stat .label{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-soft); margin-bottom:6px;}
+  .stat .value{font-family:var(--mono); font-size:1.3rem; color:var(--ink);}
+  .stat.stamp{background:var(--red-soft);}
+  .stat.stamp .value{color:var(--red);}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field select, .field textarea{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.small{padding:5px 10px; font-size:0.76rem;}
+  .btn.danger{border-color:var(--red); color:var(--red); background:transparent;}
+  .actions{display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;}
+
+  .ledger{width:100%; border-collapse:collapse; background:var(--paper-card); font-size:0.85rem;}
+  .ledger th{text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:8px 10px;}
+  .ledger td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ledger tr:hover td{background:var(--teal-soft);}
+  .ledger tr.overdue td{background:var(--red-soft);}
+  .num{font-family:var(--mono); white-space:nowrap;}
+  .empty-row{text-align:center; padding:30px 10px; color:var(--ink-soft); font-style:italic;}
+  .tag{display:inline-block; font-family:var(--mono); font-size:0.68rem; padding:3px 7px; border-radius:2px; text-transform:uppercase;}
+  .tag.noask{background:var(--teal-soft); color:var(--teal); border:1px solid var(--teal);}
+  .tag.ask{background:var(--gold-soft); color:var(--gold); border:1px solid var(--gold);}
+  .tag.overdue{background:var(--red-soft); color:var(--red); border:1px solid var(--red);}
+  .tag.ok{background:#EDEDED; color:var(--ink-soft); border:1px solid var(--line);}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+
+  @media print{ .no-print{display:none !important;} body{background:#fff;} }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="kicker">Canada Daily Code — Field Tools</div>
+      <h1>No-Ask Relationship Tracker</h1>
+    </div>
+    <div class="file-count">FILE LOG · <span id="entryCount">0</span> contacts tracked</div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not business or professional advice.</strong> This is a simple organizing tool for tracking who you've contacted and when. It doesn't manage relationships for you or guarantee any business outcome — the actual reaching out is up to you.
+</div>
+
+<div class="wrap">
+
+  <div class="prompt-box">
+    <strong>This week's move:</strong> message three people below with zero ask — a check-in, a congratulations, or something useful you noticed. Don't mention your business or a favor. Log it here so you can see the pattern building over time.
+  </div>
+
+  <div class="section-head"><span class="no">No. 01</span><h2>Where you stand</h2></div>
+  <div class="dashboard">
+    <div class="stat"><div class="label">Contacts tracked</div><div class="value" id="statTotal">0</div></div>
+    <div class="stat"><div class="label">No-ask touchpoints logged</div><div class="value" id="statNoAsk">0</div></div>
+    <div class="stat stamp"><div class="label">Overdue for a check-in (90+ days)</div><div class="value" id="statOverdue">0</div></div>
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 02</span><h2>Add a contact or log a touchpoint</h2></div>
+  <div class="card no-print">
+    <div class="row3">
+      <div class="field"><label for="cName">Name</label><input type="text" id="cName" placeholder="e.g. Priya Nair"></div>
+      <div class="field"><label for="cContext">How you know them</label><input type="text" id="cContext" placeholder="e.g. Met at Toronto Chamber event"></div>
+      <div class="field"><label for="cDate">Date of this contact</label><input type="date" id="cDate"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="cType">Type of contact</label>
+        <select id="cType"><option value="noask">No-ask (check-in, congrats, shared something useful)</option><option value="ask">Ask (requested something)</option></select>
+      </div>
+      <div class="field"><label for="cNotes">What you said / shared</label><input type="text" id="cNotes" placeholder="e.g. Congratulated them on their product launch"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="saveBtn">Save contact</button>
+      <button class="btn secondary" id="clearFormBtn">Clear form</button>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 03</span><h2>Your relationship log</h2></div>
+  <div style="overflow-x:auto;">
+    <table class="ledger">
+      <thead><tr><th>Name</th><th>Context</th><th>Last contact</th><th>Type</th><th>Notes</th><th>Status</th><th class="no-print">—</th></tr></thead>
+      <tbody id="logBody"><tr><td colspan="7" class="empty-row">No contacts yet — log your first no-ask touchpoint above.</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="actions no-print" style="margin-top:18px;">
+    <button class="btn secondary" id="exportBtn">Export CSV</button>
+    <button class="btn secondary" id="printBtn">Print report</button>
+    <button class="btn danger" id="wipeBtn">Erase all data</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> everything stays in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required. Export CSV to keep a backup before clearing browser data or switching devices.</p>
+    <p>Built by Canada Daily Code as a free, offline tool for founders building real relationships before they need them.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'cdc-relationship-tracker-v1';
+  const OVERDUE_DAYS = 90;
+
+  function loadEntries(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch(e){ return []; }
+  }
+  function saveEntries(e){ localStorage.setItem(STORAGE_KEY, JSON.stringify(e)); }
+
+  let entries = loadEntries();
+
+  const els = {
+    cName: document.getElementById('cName'), cContext: document.getElementById('cContext'),
+    cDate: document.getElementById('cDate'), cType: document.getElementById('cType'),
+    cNotes: document.getElementById('cNotes'),
+    saveBtn: document.getElementById('saveBtn'), clearFormBtn: document.getElementById('clearFormBtn'),
+    logBody: document.getElementById('logBody'), entryCount: document.getElementById('entryCount'),
+    statTotal: document.getElementById('statTotal'), statNoAsk: document.getElementById('statNoAsk'),
+    statOverdue: document.getElementById('statOverdue'),
+    exportBtn: document.getElementById('exportBtn'), printBtn: document.getElementById('printBtn'),
+    wipeBtn: document.getElementById('wipeBtn'),
+  };
+
+  const today = new Date().toISOString().slice(0,10);
+  els.cDate.value = today;
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+  function daysSince(dateStr){
+    const d1 = new Date(dateStr + 'T00:00:00');
+    const d2 = new Date(today + 'T00:00:00');
+    return Math.floor((d2 - d1) / 86400000);
+  }
+
+  function latestByName(){
+    // group entries by name, find the most recent contact date for each
+    const map = {};
+    entries.forEach(e=>{
+      const key = e.name.toLowerCase();
+      if(!map[key] || e.date > map[key].date){ map[key] = e; }
+    });
+    return map;
+  }
+
+  function render(){
+    if(entries.length === 0){
+      els.logBody.innerHTML = '<tr><td colspan="7" class="empty-row">No contacts yet — log your first no-ask touchpoint above.</td></tr>';
+    } else {
+      const latest = latestByName();
+      const rows = Object.values(latest).sort((a,b)=> b.date.localeCompare(a.date));
+      els.logBody.innerHTML = rows.map(e=>{
+        const days = daysSince(e.date);
+        const overdue = days >= OVERDUE_DAYS;
+        return `<tr class="${overdue ? 'overdue' : ''}">
+          <td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.context)}</td>
+          <td>${e.date} <span style="color:var(--ink-soft); font-size:0.78rem;">(${days}d ago)</span></td>
+          <td><span class="tag ${e.type === 'noask' ? 'noask' : 'ask'}">${e.type === 'noask' ? 'No-ask' : 'Ask'}</span></td>
+          <td>${escapeHtml(e.notes)}</td>
+          <td><span class="tag ${overdue ? 'overdue' : 'ok'}">${overdue ? 'Overdue' : 'Recent'}</span></td>
+          <td class="no-print"><button class="btn small danger" data-id="${e.id}">Delete</button></td>
+        </tr>`;
+      }).join('');
+      els.logBody.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          entries = entries.filter(e=> String(e.id) !== btn.dataset.id);
+          saveEntries(entries); render();
+        });
+      });
+    }
+
+    const latest = latestByName();
+    const totalContacts = Object.keys(latest).length;
+    const noAskCount = entries.filter(e=> e.type === 'noask').length;
+    const overdueCount = Object.values(latest).filter(e=> daysSince(e.date) >= OVERDUE_DAYS).length;
+
+    els.entryCount.textContent = totalContacts;
+    els.statTotal.textContent = totalContacts;
+    els.statNoAsk.textContent = noAskCount;
+    els.statOverdue.textContent = overdueCount;
+  }
+
+  els.saveBtn.addEventListener('click', ()=>{
+    if(!els.cName.value.trim()){
+      alert('Please enter a name.'); return;
+    }
+    entries.push({
+      id: Date.now(), name: els.cName.value.trim(), context: els.cContext.value.trim(),
+      date: els.cDate.value || today, type: els.cType.value, notes: els.cNotes.value.trim()
+    });
+    saveEntries(entries);
+    els.cName.value=''; els.cContext.value=''; els.cNotes.value=''; els.cDate.value = today;
+    render();
+  });
+  els.clearFormBtn.addEventListener('click', ()=>{
+    els.cName.value=''; els.cContext.value=''; els.cNotes.value=''; els.cDate.value = today;
+  });
+
+  function csvSafe(str){
+    const s = (str || '').toString().replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }
+
+  els.exportBtn.addEventListener('click', ()=>{
+    if(entries.length === 0){ alert('No contacts to export yet.'); return; }
+    const header = ['Name','Context','Date','Type','Notes'];
+    const lines = [header.join(',')];
+    entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
+      lines.push([csvSafe(e.name), csvSafe(e.context), e.date, e.type, csvSafe(e.notes)].join(','));
+    });
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'relationship-log-' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  els.printBtn.addEventListener('click', ()=> window.print());
+
+  els.wipeBtn.addEventListener('click', ()=>{
+    if(confirm('This will permanently delete every contact stored in this browser. Export a CSV first if you want to keep a copy. Continue?')){
+      entries = [];
+      saveEntries(entries);
+      render();
+    }
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
