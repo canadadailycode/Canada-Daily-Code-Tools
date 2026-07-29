@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Six-Figure Side Business Blueprint Tracker — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.55; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:34px 20px 26px; border-bottom:7px solid var(--gold); text-align:center;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.72rem; letter-spacing:2px; color:var(--gold-soft); margin-bottom:10px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.9rem; margin:0 0 8px;}
+  .masthead p{max-width:600px; margin:0 auto; color:#C9D1D9; font-size:0.95rem;}
+
+  .disclaimer{max-width:1000px; margin:20px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .progress-bar{background:#fff; border:1px solid var(--line); height:28px; border-radius:2px; overflow:hidden; margin:30px 0 20px;}
+  .progress-fill{background:var(--teal); height:100%; display:flex; align-items:center; justify-content:flex-end; color:#fff; font-family:var(--mono); font-size:0.78rem; padding-right:10px; transition:width 0.3s; min-width:60px;}
+
+  .step-list{display:flex; flex-direction:column; gap:14px;}
+  .step-card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .step-card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .step-card.done{border-left:4px solid var(--teal);}
+  .step-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;}
+  .step-num{font-family:var(--mono); color:var(--gold); font-size:0.78rem; text-transform:uppercase; letter-spacing:1px;}
+  .step-name{font-family:var(--serif); font-size:1.15rem; margin:4px 0 8px;}
+  .step-desc{font-size:0.88rem; color:var(--ink-soft); margin-bottom:10px;}
+  .step-link{font-family:var(--mono); font-size:0.78rem; white-space:nowrap;}
+  .step-controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;}
+  .step-controls select{padding:7px 9px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.85rem;}
+  .step-controls input[type=text]{flex:1; min-width:200px; padding:7px 9px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.85rem;}
+  .status-label{font-size:0.76rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft);}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .actions{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+
+  @media print{ .no-print{display:none !important;} body{background:#fff;} }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="kicker">Canada Daily Code — Weekly Flagship</div>
+  <h1>Six-Figure Side Business Blueprint Tracker</h1>
+  <p>The five real steps from this week, in order, each linked to the actual free tool built for it — so you always know exactly what to do next.</p>
+</div>
+
+<div class="disclaimer">
+  <strong>Not business or financial advice.</strong> This is a progress tracker for the five steps covered this week. It doesn't guarantee any income outcome — "six-figure" describes a realistic long-term destination some people following disciplined, tested steps have reached over time, not a promise or timeline. Always use your own judgment and, where relevant, a licensed professional's advice for significant decisions.
+</div>
+
+<div class="wrap">
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%;">0 / 5 steps</div></div>
+
+  <div class="step-list" id="stepList"></div>
+
+  <div class="actions no-print">
+    <button class="btn secondary" id="printBtn">Print my progress</button>
+    <button class="btn" id="resetBtn" style="border-color:var(--red); color:var(--red); background:transparent;">Reset all progress</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> your status and notes for each step stay in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required.</p>
+    <p>Built by Canada Daily Code as a free, offline progress tracker tying together this week's tools. Real growth from these steps typically takes months of consistent effort, not days — there's no shortcut this tracker or any tool can provide around that.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'cdc-blueprint-tracker-v1';
+  const BASE_URL = 'https://canadadailycode.github.io/Canada-Daily-Code-Tools/';
+
+  const STEPS = [
+    { id:'test', name:'Test before you build', desc:'Spend a small amount to test real demand before spending on anything polished. Use the Bootstrap Budget & Reinvestment Tracker to log every test dollar and every real sale.', tool:'bootstrap-budget-tracker.html', toolName:'Bootstrap Budget & Reinvestment Tracker' },
+    { id:'price', name:'Price with confidence', desc:'Once real demand exists, raise your price and see what actually happens. Use the Price Increase Break-Even Calculator to know your numbers before you test.', tool:'price-increase-calculator.html', toolName:'Price Increase Break-Even Calculator' },
+    { id:'relationships', name:'Build relationships before you need them', desc:'Reach out with zero ask, regularly. Use the No-Ask Relationship Tracker to log check-ins and see who\'s overdue.', tool:'no-ask-relationship-tracker.html', toolName:'No-Ask Relationship Tracker' },
+    { id:'support', name:'Use the support already available', desc:'Real Canadian programs exist for financing and mentorship. Use the Canadian Business Support Directory & Tracker to find and track them.', tool:'business-support-directory.html', toolName:'Canadian Business Support Directory & Tracker' },
+    { id:'skill', name:'Master the skill, let passion follow', desc:'Ask for honest, uncomfortable feedback instead of protecting your ego. Use the Honest Feedback Log to capture what customers actually say.', tool:'honest-feedback-log.html', toolName:'Honest Feedback Log' }
+  ];
+
+  function loadStatus(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
+  }
+  function saveStatus(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+  let statusData = loadStatus();
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+
+  function renderSteps(){
+    const list = document.getElementById('stepList');
+    list.innerHTML = STEPS.map((step, idx) => {
+      const s = statusData[step.id] || { status: 'not-started', notes: '' };
+      const isDone = s.status === 'done';
+      return `
+        <div class="step-card ${isDone ? 'done' : ''}">
+          <div class="step-top">
+            <div>
+              <div class="step-num">Step ${idx + 1} of 5</div>
+              <div class="step-name">${step.name}</div>
+            </div>
+            <a class="step-link" href="${BASE_URL}${step.tool}" target="_blank" rel="noopener">Open ${step.toolName} →</a>
+          </div>
+          <div class="step-desc">${step.desc}</div>
+          <div class="step-controls no-print">
+            <span class="status-label">Status:</span>
+            <select data-id="${step.id}" class="status-field">
+              <option value="not-started" ${s.status==='not-started'?'selected':''}>Not started</option>
+              <option value="in-progress" ${s.status==='in-progress'?'selected':''}>In progress</option>
+              <option value="done" ${s.status==='done'?'selected':''}>Done for now</option>
+            </select>
+            <input type="text" data-id="${step.id}" class="notes-field" placeholder="Notes on where you're at" value="${escapeHtml(s.notes)}">
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('.status-field').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        const id = sel.dataset.id;
+        statusData[id] = statusData[id] || { status:'not-started', notes:'' };
+        statusData[id].status = sel.value;
+        saveStatus(statusData);
+        renderSteps();
+        renderProgress();
+      });
+    });
+    list.querySelectorAll('.notes-field').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const id = inp.dataset.id;
+        statusData[id] = statusData[id] || { status:'not-started', notes:'' };
+        statusData[id].notes = inp.value;
+        saveStatus(statusData);
+      });
+    });
+  }
+
+  function renderProgress(){
+    const done = STEPS.filter(step => (statusData[step.id] || {}).status === 'done').length;
+    const pct = (done / STEPS.length) * 100;
+    const fill = document.getElementById('progressFill');
+    fill.style.width = pct + '%';
+    fill.textContent = done + ' / ' + STEPS.length + ' steps';
+  }
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(confirm('This will erase your status and notes for all five steps. Continue?')){
+      statusData = {};
+      saveStatus(statusData);
+      renderSteps();
+      renderProgress();
+    }
+  });
+
+  renderSteps();
+  renderProgress();
+})();
+</script>
+
+</body>
+</html>
