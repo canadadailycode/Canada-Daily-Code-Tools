@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Reconnection Tool — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+  .masthead .file-count{font-family:var(--mono); font-size:0.85rem; opacity:0.85;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .prompt-box{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:14px 18px; font-size:0.9rem; margin-bottom:16px;}
+  .prompt-box strong{color:var(--gold);}
+
+  .template-list{display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line);}
+  .template-card{background:var(--paper-card); padding:16px 18px;}
+  .template-label{font-family:var(--mono); font-size:0.72rem; color:var(--gold); text-transform:uppercase; margin-bottom:6px;}
+  .template-text{font-size:0.92rem; line-height:1.5; margin-bottom:10px; font-style:italic;}
+  .copy-btn{font-family:var(--mono); font-size:0.76rem;}
+
+  .dashboard{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .stat{background:var(--paper-card); padding:16px 14px;}
+  .stat .label{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-soft); margin-bottom:6px;}
+  .stat .value{font-family:var(--mono); font-size:1.3rem; color:var(--ink);}
+  .stat.stamp{background:var(--red-soft);}
+  .stat.stamp .value{color:var(--red);}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field textarea{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.small{padding:5px 10px; font-size:0.76rem;}
+  .btn.danger{border-color:var(--red); color:var(--red); background:transparent;}
+  .actions{display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;}
+
+  .ledger{width:100%; border-collapse:collapse; background:var(--paper-card); font-size:0.85rem;}
+  .ledger th{text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:8px 10px;}
+  .ledger td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ledger tr.overdue td{background:var(--red-soft);}
+  .empty-row{text-align:center; padding:30px 10px; color:var(--ink-soft); font-style:italic;}
+  .tag{display:inline-block; font-family:var(--mono); font-size:0.68rem; padding:3px 7px; border-radius:2px; text-transform:uppercase;}
+  .tag.overdue{background:var(--red-soft); color:var(--red); border:1px solid var(--red);}
+  .tag.ok{background:var(--teal-soft); color:var(--teal); border:1px solid var(--teal);}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+
+  @media print{ .no-print{display:none !important;} body{background:#fff;} }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="kicker">Canada Daily Code — Field Tools</div>
+      <h1>Customer Reconnection Tool</h1>
+    </div>
+    <div class="file-count">FILE LOG · <span id="entryCount">0</span> customers tracked</div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not business or professional advice.</strong> These are plain message templates and a simple tracker — not automated outreach. Every message still gets sent by you, personally, to someone you actually know.
+</div>
+
+<div class="wrap">
+
+  <div class="prompt-box">
+    <strong>This week's move:</strong> message three past customers with zero sales pitch. Just ask how they're doing. Pick a template below, personalize it, and send it yourself.
+  </div>
+
+  <div class="section-head"><span class="no">No. 01</span><h2>Zero-pitch message templates</h2></div>
+  <div class="template-list">
+    <div class="template-card">
+      <div class="template-label">Simple check-in</div>
+      <div class="template-text" id="tpl1">"Hey [name] — no reason for this message except I was thinking of you. How's everything going on your end?"</div>
+      <button class="btn secondary small copy-btn no-print" data-target="tpl1">Copy</button>
+    </div>
+    <div class="template-card">
+      <div class="template-label">Remembering a detail</div>
+      <div class="template-text" id="tpl2">"Hi [name], this randomly reminded me of [specific thing they mentioned — a trip, a project, an event]. Hope that ended up going well!"</div>
+      <button class="btn secondary small copy-btn no-print" data-target="tpl2">Copy</button>
+    </div>
+    <div class="template-card">
+      <div class="template-label">Sharing something useful, no ask</div>
+      <div class="template-text" id="tpl3">"Hey [name] — saw this and thought of you, no reason at all: [article/resource/idea]. Hope you're doing well."</div>
+      <button class="btn secondary small copy-btn no-print" data-target="tpl3">Copy</button>
+    </div>
+    <div class="template-card">
+      <div class="template-label">Genuine thank-you, long after the sale</div>
+      <div class="template-text" id="tpl4">"Hi [name], I was thinking back on working together on [thing] and just wanted to say thanks again — hope things have been good since."</div>
+      <button class="btn secondary small copy-btn no-print" data-target="tpl4">Copy</button>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 02</span><h2>Who you're tracking</h2></div>
+  <div class="dashboard">
+    <div class="stat"><div class="label">Customers tracked</div><div class="value" id="statTotal">0</div></div>
+    <div class="stat stamp"><div class="label">Overdue for a check-in (60+ days)</div><div class="value" id="statOverdue">0</div></div>
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 03</span><h2>Add or update a customer</h2></div>
+  <div class="card no-print">
+    <div class="row3">
+      <div class="field"><label for="cName">Name</label><input type="text" id="cName" placeholder="e.g. Marc Tremblay"></div>
+      <div class="field"><label for="cDetail">A detail worth remembering</label><input type="text" id="cDetail" placeholder="e.g. Mentioned opening a second location"></div>
+      <div class="field"><label for="cDate">Date of last check-in</label><input type="date" id="cDate"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="saveBtn">Save customer</button>
+      <button class="btn secondary" id="clearFormBtn">Clear form</button>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 04</span><h2>Your customer log</h2></div>
+  <div style="overflow-x:auto;">
+    <table class="ledger">
+      <thead><tr><th>Name</th><th>Detail to remember</th><th>Last check-in</th><th>Status</th><th class="no-print">—</th></tr></thead>
+      <tbody id="logBody"><tr><td colspan="5" class="empty-row">No customers tracked yet — add your first above.</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="actions no-print" style="margin-top:18px;">
+    <button class="btn secondary" id="exportBtn">Export CSV</button>
+    <button class="btn secondary" id="printBtn">Print report</button>
+    <button class="btn danger" id="wipeBtn">Erase all data</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> everything stays in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required. Export CSV to keep a backup before clearing browser data or switching devices.</p>
+    <p>Built by Canada Daily Code as a free, offline tool for making sure past customers never feel forgotten.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'cdc-reconnection-tracker-v1';
+  const OVERDUE_DAYS = 60;
+
+  function loadEntries(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch(e){ return []; }
+  }
+  function saveEntries(e){ localStorage.setItem(STORAGE_KEY, JSON.stringify(e)); }
+
+  let entries = loadEntries();
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('cDate').value = today;
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+  function daysSince(dateStr){
+    const d1 = new Date(dateStr + 'T00:00:00');
+    const d2 = new Date(today + 'T00:00:00');
+    return Math.floor((d2 - d1) / 86400000);
+  }
+
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const text = document.getElementById(btn.dataset.target).textContent;
+      navigator.clipboard.writeText(text).then(()=>{
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(()=>{ btn.textContent = original; }, 1500);
+      }).catch(()=>{
+        alert('Could not copy automatically — please select and copy the text manually.');
+      });
+    });
+  });
+
+  function render(){
+    const logBody = document.getElementById('logBody');
+    if(entries.length === 0){
+      logBody.innerHTML = '<tr><td colspan="5" class="empty-row">No customers tracked yet — add your first above.</td></tr>';
+    } else {
+      const sorted = entries.slice().sort((a,b)=> a.date.localeCompare(b.date));
+      logBody.innerHTML = sorted.map(e=>{
+        const days = daysSince(e.date);
+        const overdue = days >= OVERDUE_DAYS;
+        return `<tr class="${overdue ? 'overdue' : ''}">
+          <td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.detail)}</td>
+          <td>${e.date} <span style="color:var(--ink-soft); font-size:0.78rem;">(${days}d ago)</span></td>
+          <td><span class="tag ${overdue ? 'overdue' : 'ok'}">${overdue ? 'Overdue' : 'Recent'}</span></td>
+          <td class="no-print"><button class="btn small danger" data-id="${e.id}">Delete</button></td>
+        </tr>`;
+      }).join('');
+      logBody.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          entries = entries.filter(e=> String(e.id) !== btn.dataset.id);
+          saveEntries(entries); render();
+        });
+      });
+    }
+
+    document.getElementById('entryCount').textContent = entries.length;
+    document.getElementById('statTotal').textContent = entries.length;
+    document.getElementById('statOverdue').textContent = entries.filter(e=> daysSince(e.date) >= OVERDUE_DAYS).length;
+  }
+
+  document.getElementById('saveBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('cName').value.trim();
+    const detail = document.getElementById('cDetail').value.trim();
+    const dateVal = document.getElementById('cDate').value || today;
+    if(!name){ alert('Please enter a name.'); return; }
+    entries.push({ id: Date.now(), name, detail, date: dateVal });
+    saveEntries(entries);
+    document.getElementById('cName').value = '';
+    document.getElementById('cDetail').value = '';
+    document.getElementById('cDate').value = today;
+    render();
+  });
+  document.getElementById('clearFormBtn').addEventListener('click', ()=>{
+    document.getElementById('cName').value = '';
+    document.getElementById('cDetail').value = '';
+    document.getElementById('cDate').value = today;
+  });
+
+  function csvSafe(str){
+    const s = (str || '').toString().replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    if(entries.length === 0){ alert('No customers to export yet.'); return; }
+    const lines = [['Name','Detail','Last Check-in'].join(',')];
+    entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
+      lines.push([csvSafe(e.name), csvSafe(e.detail), e.date].join(','));
+    });
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'customer-reconnection-log-' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  document.getElementById('wipeBtn').addEventListener('click', ()=>{
+    if(confirm('This will permanently delete every customer stored in this browser. Export a CSV first if you want to keep a copy. Continue?')){
+      entries = [];
+      saveEntries(entries);
+      render();
+    }
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
