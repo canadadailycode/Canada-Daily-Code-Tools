@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Delivery Practice Tool — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field textarea, .field input{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .field textarea{min-height:90px; resize:vertical;}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.big{font-size:1.1rem; padding:16px 30px;}
+  .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+
+  .result-box{margin-top:16px;}
+  .hedge-tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .hedge-tag{background:var(--red-soft); border:1px solid var(--red); color:var(--red); padding:5px 10px; border-radius:2px; font-family:var(--mono); font-size:0.78rem;}
+  .clean-msg{background:var(--teal-soft); border:1px solid var(--teal); color:var(--teal); padding:12px 16px; border-radius:2px; font-size:0.9rem;}
+
+  .practice-area{text-align:center; padding:30px 20px; background:var(--paper-card); border:1px solid var(--line);}
+  .rep-count{font-family:var(--mono); font-size:2.4rem; color:var(--teal); margin-bottom:6px;}
+  .rep-target{font-size:0.85rem; color:var(--ink-soft); margin-bottom:20px;}
+
+  .pause-timer{text-align:center; padding:30px 20px; background:var(--ink); color:var(--paper); border-radius:2px;}
+  .pause-timer .countdown{font-family:var(--mono); font-size:3.5rem; color:var(--gold-soft); margin:14px 0;}
+  .pause-timer .instruction{font-family:var(--serif); font-size:1.05rem;}
+
+  .dashboard{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:20px;}
+  .stat{background:var(--paper-card); padding:16px 14px;}
+  .stat .label{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-soft); margin-bottom:6px;}
+  .stat .value{font-family:var(--mono); font-size:1.3rem; color:var(--ink);}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="kicker">Canada Daily Code — Field Tools</div>
+    <h1>Price Delivery Practice Tool</h1>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not sales or professional advice.</strong> This tool flags common hedging language in text and gives you a practice counter and pause timer — it can't hear your actual voice or tone. The real practice is you, saying it out loud.
+</div>
+
+<div class="wrap">
+
+  <div class="section-head"><span class="no">No. 01</span><h2>Check your price script for hedging language</h2></div>
+  <div class="card">
+    <div class="field"><label for="scriptText">Write exactly what you'd say when quoting your price</label><textarea id="scriptText" placeholder="e.g. So it's just, um, I think around $800, but I mean, we could probably work something out if that's too much..."></textarea></div>
+    <div class="actions"><button class="btn" id="checkBtn">Check for hedging language</button></div>
+    <div class="result-box" id="hedgeResults" style="display:none;"></div>
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 02</span><h2>Practice reps</h2></div>
+  <div class="practice-area no-print">
+    <div class="rep-count" id="repCount">0</div>
+    <div class="rep-target">of 20 today — say your price out loud, then click</div>
+    <button class="btn big" id="repBtn">I said it out loud</button>
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 03</span><h2>Practice the 3-second pause</h2></div>
+  <div class="pause-timer no-print">
+    <div class="instruction" id="pauseInstruction">Click start, say your price out loud, then hold silent until the countdown ends.</div>
+    <div class="countdown" id="pauseCountdown">3</div>
+    <div class="actions" style="justify-content:center;">
+      <button class="btn" id="pauseBtn" style="background:var(--gold); border-color:var(--gold); color:var(--ink);">Start pause practice</button>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="stat"><div class="label">Total reps (all time)</div><div class="value" id="statTotalReps">0</div></div>
+    <div class="stat"><div class="label">Reps today</div><div class="value" id="statTodayReps">0</div></div>
+    <div class="stat"><div class="label">Pause practices completed</div><div class="value" id="statPauses">0</div></div>
+  </div>
+
+  <div class="actions no-print" style="margin-top:20px;">
+    <button class="btn secondary" id="resetTodayBtn">Reset today's rep count</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> everything stays in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required.</p>
+    <p>Built by Canada Daily Code as a free, offline practice tool. Not affiliated with any sales training program. Real confidence comes from real practice — this tool just tracks the reps.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const HEDGE_PHRASES = [
+    'just', 'i think', 'i guess', 'maybe', 'kind of', 'sort of', 'basically',
+    'um', 'uh', 'sorry', 'i mean', 'probably', 'if that\'s okay', 'if that works',
+    'does that work for you', 'no problem if not', 'we could work something out',
+    'a little', 'roughly', 'ish', 'i suppose', 'to be honest'
+  ];
+
+  document.getElementById('checkBtn').addEventListener('click', ()=>{
+    const text = document.getElementById('scriptText').value.trim();
+    if(!text){ alert('Please write your price script first.'); return; }
+    const lower = text.toLowerCase();
+    const found = HEDGE_PHRASES.filter(phrase => lower.includes(phrase));
+
+    const box = document.getElementById('hedgeResults');
+    if(found.length === 0){
+      box.innerHTML = `<div class="clean-msg">No common hedging phrases found in this script. That's a good sign — but the real test is how it sounds out loud.</div>`;
+    } else {
+      const tags = found.map(f => `<span class="hedge-tag">"${f}"</span>`).join('');
+      box.innerHTML = `<div style="font-size:0.88rem; color:var(--ink-soft); margin-bottom:8px;">Found ${found.length} hedging phrase${found.length>1?'s':''} — consider cutting these:</div><div class="hedge-tags">${tags}</div>`;
+    }
+    box.style.display = 'block';
+  });
+
+  const STORAGE_KEY = 'cdc-price-practice-v1';
+  const today = new Date().toISOString().slice(0,10);
+
+  function loadData(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : { totalReps: 0, repsByDay: {}, pauses: 0 }; }
+    catch(e){ return { totalReps: 0, repsByDay: {}, pauses: 0 }; }
+  }
+  function saveData(d){ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
+  let data = loadData();
+  if(!data.repsByDay) data.repsByDay = {};
+  if(!data.pauses) data.pauses = 0;
+
+  function renderStats(){
+    document.getElementById('repCount').textContent = data.repsByDay[today] || 0;
+    document.getElementById('statTotalReps').textContent = data.totalReps || 0;
+    document.getElementById('statTodayReps').textContent = data.repsByDay[today] || 0;
+    document.getElementById('statPauses').textContent = data.pauses || 0;
+  }
+
+  document.getElementById('repBtn').addEventListener('click', ()=>{
+    data.totalReps = (data.totalReps || 0) + 1;
+    data.repsByDay[today] = (data.repsByDay[today] || 0) + 1;
+    saveData(data);
+    renderStats();
+  });
+
+  document.getElementById('resetTodayBtn').addEventListener('click', ()=>{
+    data.repsByDay[today] = 0;
+    saveData(data);
+    renderStats();
+  });
+
+  let pauseRunning = false;
+  document.getElementById('pauseBtn').addEventListener('click', ()=>{
+    if(pauseRunning) return;
+    pauseRunning = true;
+    const btn = document.getElementById('pauseBtn');
+    const countdownEl = document.getElementById('pauseCountdown');
+    const instructionEl = document.getElementById('pauseInstruction');
+    btn.disabled = true;
+    instructionEl.textContent = 'Say your price out loud now...';
+    let count = 3;
+    countdownEl.textContent = count;
+    setTimeout(()=>{
+      instructionEl.textContent = 'Now hold silent...';
+      const interval = setInterval(()=>{
+        count--;
+        countdownEl.textContent = count > 0 ? count : '✓';
+        if(count <= 0){
+          clearInterval(interval);
+          instructionEl.textContent = 'Pause complete. That silence is the signal.';
+          data.pauses = (data.pauses || 0) + 1;
+          saveData(data);
+          renderStats();
+          setTimeout(()=>{
+            pauseRunning = false;
+            btn.disabled = false;
+            countdownEl.textContent = '3';
+            instructionEl.textContent = 'Click start, say your price out loud, then hold silent until the countdown ends.';
+          }, 2000);
+        }
+      }, 1000);
+    }, 1200);
+  });
+
+  renderStats();
+})();
+</script>
+
+</body>
+</html>
