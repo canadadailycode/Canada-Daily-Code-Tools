@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winter Cash Flow Gap Calculator — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .prompt-box{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:14px 18px; font-size:0.9rem; margin-bottom:16px;}
+  .prompt-box strong{color:var(--gold);}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .cost-row{display:grid; grid-template-columns:1fr 140px 100px 36px; gap:10px; align-items:center; margin-bottom:8px;}
+  .cost-row input{padding:8px 10px; border:1px solid var(--line); border-radius:2px; background:#fff;}
+  .cost-row .rm{cursor:pointer; color:var(--red); text-align:center; font-family:var(--mono);}
+  .cost-row .header{font-size:0.72rem; text-transform:uppercase; color:var(--ink-soft); letter-spacing:0.5px;}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.small{padding:6px 10px; font-size:0.8rem;}
+  .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+
+  .result-box{margin-top:20px; background:var(--paper-card); border:1px solid var(--line);}
+  .result-row{display:flex; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--line); font-size:0.9rem;}
+  .result-row:last-child{border-bottom:none;}
+  .result-row .val{font-family:var(--mono); font-weight:600;}
+  .result-row.total{background:var(--red-soft); font-weight:700;}
+  .result-row.total .val{color:var(--red); font-size:1.15rem;}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="kicker">Canada Daily Code — Field Tools</div>
+    <h1>Winter Cash Flow Gap Calculator</h1>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not financial or accounting advice.</strong> This tool adds up the numbers you provide into a single winter cash gap figure — it doesn't predict this winter's actual costs or revenue, and it's only as accurate as your estimates. Confirm significant budget decisions with your own records and, where useful, an accountant.
+</div>
+
+<div class="wrap">
+
+  <div class="prompt-box">
+    <strong>The exercise:</strong> list every cost that rises for you in winter, then compare your typical winter revenue against the rest of the year. The tool adds both sides together into the real cash gap to save for before winter begins.
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 01</span><h2>Winter cost increases</h2></div>
+  <div class="card no-print">
+    <div class="cost-row" style="margin-bottom:4px;">
+      <div class="header">Cost item</div><div class="header">Extra monthly cost</div><div class="header">Months it applies</div><div></div>
+    </div>
+    <div id="costRows"></div>
+    <button class="btn secondary small" id="addCostBtn" style="margin-top:6px;">+ Add cost</button>
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 02</span><h2>Revenue comparison</h2></div>
+  <div class="card no-print">
+    <div class="row3">
+      <div class="field"><label for="revNormal">Typical monthly revenue, rest of year (CAD)</label><input type="number" id="revNormal" min="0" step="10" value="15000"></div>
+      <div class="field"><label for="revWinter">Typical monthly revenue, winter months (CAD)</label><input type="number" id="revWinter" min="0" step="10" value="10000"></div>
+      <div class="field"><label for="winterMonths">Number of winter months affected</label><input type="number" id="winterMonths" min="1" max="12" step="1" value="4"></div>
+    </div>
+  </div>
+
+  <div class="actions no-print">
+    <button class="btn" id="calcBtn">Calculate my winter cash gap</button>
+  </div>
+
+  <div class="result-box" id="results" style="display:none;"></div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> nothing you enter here is saved, sent anywhere, or tracked. This page runs entirely offline in your browser with no analytics and no network calls.</p>
+    <p>Built by Canada Daily Code as a free educational calculator. The math is simple addition and subtraction of the numbers you provide — always verify significant totals against your own records.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const costRows = document.getElementById('costRows');
+  let rowCount = 0;
+
+  function addCostRow(name, cost, months){
+    rowCount++;
+    const id = 'cost' + rowCount + '_' + Date.now();
+    const row = document.createElement('div');
+    row.className = 'cost-row';
+    row.id = id;
+    row.innerHTML = `
+      <input type="text" class="cost-name" placeholder="e.g. Extra heating" value="${name || ''}">
+      <input type="number" class="cost-amount" placeholder="0.00" min="0" step="1" value="${cost || ''}">
+      <input type="number" class="cost-months" placeholder="months" min="1" max="12" step="1" value="${months || 4}">
+      <div class="rm" data-id="${id}">✕</div>
+    `;
+    costRows.appendChild(row);
+    row.querySelector('.rm').addEventListener('click', ()=>{
+      document.getElementById(id).remove();
+    });
+  }
+
+  addCostRow('Extra heating', 300, 4);
+  addCostRow('Snow removal / salting', 200, 4);
+  addCostRow('Winter tires / vehicle costs', 100, 4);
+
+  document.getElementById('addCostBtn').addEventListener('click', ()=> addCostRow('', '', 4));
+
+  function fmtCAD(n){ return Number(n||0).toLocaleString('en-CA', {style:'currency', currency:'CAD', maximumFractionDigits:0}); }
+
+  document.getElementById('calcBtn').addEventListener('click', ()=>{
+    const rows = Array.from(costRows.children);
+    let totalCostIncrease = 0;
+    let costDetails = [];
+    rows.forEach(row => {
+      const name = row.querySelector('.cost-name').value.trim();
+      const amount = Number(row.querySelector('.cost-amount').value || 0);
+      const months = Number(row.querySelector('.cost-months').value || 0);
+      if(name && amount && months){
+        const subtotal = amount * months;
+        totalCostIncrease += subtotal;
+        costDetails.push({ name, amount, months, subtotal });
+      }
+    });
+
+    const revNormal = Number(document.getElementById('revNormal').value || 0);
+    const revWinter = Number(document.getElementById('revWinter').value || 0);
+    const winterMonths = Number(document.getElementById('winterMonths').value || 0);
+
+    const monthlyRevenueDrop = Math.max(0, revNormal - revWinter);
+    const totalRevenueLoss = monthlyRevenueDrop * winterMonths;
+
+    const totalGap = totalCostIncrease + totalRevenueLoss;
+
+    const box = document.getElementById('results');
+    let html = costDetails.map(c => `
+      <div class="result-row"><span>${c.name} (${fmtCAD(c.amount)} × ${c.months} months)</span><span class="val">${fmtCAD(c.subtotal)}</span></div>
+    `).join('');
+    html += `
+      <div class="result-row"><span>Total extra winter costs</span><span class="val">${fmtCAD(totalCostIncrease)}</span></div>
+      <div class="result-row"><span>Monthly revenue drop (${fmtCAD(revNormal)} − ${fmtCAD(revWinter)})</span><span class="val">${fmtCAD(monthlyRevenueDrop)}</span></div>
+      <div class="result-row"><span>Total revenue lost over ${winterMonths} winter months</span><span class="val">${fmtCAD(totalRevenueLoss)}</span></div>
+      <div class="result-row total"><span>Your real winter cash gap</span><span class="val">${fmtCAD(totalGap)}</span></div>
+    `;
+    box.innerHTML = html;
+    box.style.display = 'block';
+  });
+
+  document.getElementById('calcBtn').click();
+})();
+</script>
+
+</body>
+</html>
