@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Turnover Cost Calculator — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .rates-note{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:12px 16px; font-size:0.82rem; color:var(--ink); margin-bottom:16px;}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field small{display:block; font-weight:400; text-transform:none; letter-spacing:0; color:var(--ink-soft); margin-top:2px; font-size:0.78rem;}
+  .field input{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+  @media (max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:11px 20px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+
+  .result-box{margin-top:20px; background:var(--paper-card); border:1px solid var(--line);}
+  .result-row{display:flex; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--line); font-size:0.9rem;}
+  .result-row:last-child{border-bottom:none;}
+  .result-row .val{font-family:var(--mono); font-weight:600;}
+  .result-row.total{background:var(--red-soft); font-weight:700;}
+  .result-row.total .val{color:var(--red); font-size:1.15rem;}
+  .result-row.multiple{background:var(--gold-soft);}
+  .result-row.multiple .val{color:var(--gold);}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="kicker">Canada Daily Code — Field Tools</div>
+    <h1>Employee Turnover Cost Calculator</h1>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not financial or HR advice.</strong> This tool adds up the numbers you provide into a real turnover cost figure. It doesn't predict future turnover, know your actual payroll, or account for every cost (e.g. severance, benefits continuation) — it calculates the specific factors the video names, based on your estimates.
+</div>
+
+<div class="wrap">
+
+  <div class="rates-note">
+    <strong>The calculation:</strong> Total turnover cost = replacement salary paid so far + (training hours × your hourly value) + (lost productivity hours during ramp-up × your hourly value) + (hiring/admin hours × your hourly value). Standard addition — you can verify it yourself.
+  </div>
+
+  <div class="section-head"><span class="no">No. 01</span><h2>Calculate your last departure's real cost</h2></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label for="salary">Annual salary of the role (CAD)</label><input type="number" id="salary" min="0" step="100" value="55000"></div>
+      <div class="field"><label for="hourlyValue">What your time (or the trainer's time) is worth per hour (CAD)</label><input type="number" id="hourlyValue" min="0" step="1" value="40"></div>
+    </div>
+    <div class="row3">
+      <div class="field"><label for="trainingHours">Hours spent training the new hire</label><input type="number" id="trainingHours" min="0" step="1" value="40"></div>
+      <div class="field"><label for="rampHours">Lost productivity hours during ramp-up
+        <small>Hours the new hire was less productive than a fully trained employee, times how much less productive.</small>
+      </label><input type="number" id="rampHours" min="0" step="1" value="60"></div>
+      <div class="field"><label for="hiringHours">Hours spent hiring (posting, screening, interviewing)</label><input type="number" id="hiringHours" min="0" step="1" value="20"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="adCost">Job posting / recruiter costs (CAD, if any)</label><input type="number" id="adCost" min="0" step="10" value="0"></div>
+      <div class="field"><label for="vacantWeeks">Weeks the role sat vacant (for context, not added to total)</label><input type="number" id="vacantWeeks" min="0" step="1" value="3"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="calcBtn">Calculate the real turnover cost</button>
+    </div>
+  </div>
+
+  <div class="result-box" id="results" style="display:none;"></div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> nothing you enter here is saved, sent anywhere, or tracked. This page runs entirely offline in your browser with no analytics and no network calls.</p>
+    <p>Built by Canada Daily Code as a free educational calculator. The math is simple addition and multiplication of the numbers you provide — it does not include every possible cost (severance, benefits gaps, morale effects on remaining staff) and is not a complete HR cost model.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  function fmtCAD(n){ return Number(n||0).toLocaleString('en-CA', {style:'currency', currency:'CAD', maximumFractionDigits:0}); }
+
+  document.getElementById('calcBtn').addEventListener('click', ()=>{
+    const salary = Number(document.getElementById('salary').value || 0);
+    const hourlyValue = Number(document.getElementById('hourlyValue').value || 0);
+    const trainingHours = Number(document.getElementById('trainingHours').value || 0);
+    const rampHours = Number(document.getElementById('rampHours').value || 0);
+    const hiringHours = Number(document.getElementById('hiringHours').value || 0);
+    const adCost = Number(document.getElementById('adCost').value || 0);
+    const vacantWeeks = Number(document.getElementById('vacantWeeks').value || 0);
+
+    const trainingCost = trainingHours * hourlyValue;
+    const rampCost = rampHours * hourlyValue;
+    const hiringCost = hiringHours * hourlyValue;
+    const hiddenTotal = trainingCost + rampCost + hiringCost + adCost;
+    const totalCost = salary + hiddenTotal;
+    const multiple = salary > 0 ? (totalCost / salary) : 0;
+
+    const box = document.getElementById('results');
+    box.innerHTML = `
+      <div class="result-row"><span>Training cost (${trainingHours} hrs × ${fmtCAD(hourlyValue)})</span><span class="val">${fmtCAD(trainingCost)}</span></div>
+      <div class="result-row"><span>Lost productivity during ramp-up (${rampHours} hrs × ${fmtCAD(hourlyValue)})</span><span class="val">${fmtCAD(rampCost)}</span></div>
+      <div class="result-row"><span>Hiring/admin time (${hiringHours} hrs × ${fmtCAD(hourlyValue)})</span><span class="val">${fmtCAD(hiringCost)}</span></div>
+      <div class="result-row"><span>Job posting / recruiter costs</span><span class="val">${fmtCAD(adCost)}</span></div>
+      <div class="result-row"><span>Total hidden cost (beyond salary)</span><span class="val">${fmtCAD(hiddenTotal)}</span></div>
+      <div class="result-row"><span>Salary for the role</span><span class="val">${fmtCAD(salary)}</span></div>
+      <div class="result-row total"><span>Real total turnover cost</span><span class="val">${fmtCAD(totalCost)}</span></div>
+      <div class="result-row multiple"><span>That's this many times the annual salary</span><span class="val">${multiple.toFixed(2)}×</span></div>
+      ${vacantWeeks > 0 ? `<div class="result-row"><span>For context: the role sat vacant</span><span class="val">${vacantWeeks} weeks</span></div>` : ''}
+    `;
+    box.style.display = 'block';
+  });
+
+  document.getElementById('calcBtn').click();
+})();
+</script>
+
+</body>
+</html>
