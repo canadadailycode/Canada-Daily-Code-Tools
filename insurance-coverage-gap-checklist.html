@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insurance Coverage Gap Checklist — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .prompt-box{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:14px 18px; font-size:0.9rem; margin-bottom:16px;}
+  .prompt-box strong{color:var(--gold);}
+
+  .dashboard{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .stat{background:var(--paper-card); padding:16px 14px;}
+  .stat .label{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-soft); margin-bottom:6px;}
+  .stat .value{font-family:var(--mono); font-size:1.3rem; color:var(--ink);}
+  .stat.stamp{background:var(--red-soft);}
+  .stat.stamp .value{color:var(--red);}
+
+  .item-list{display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:16px;}
+  .item-card{background:var(--paper-card); padding:16px 18px;}
+  .item-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;}
+  .item-name{font-family:var(--serif); font-size:1.05rem; margin:0 0 4px;}
+  .item-desc{font-size:0.86rem; color:var(--ink-soft); margin-bottom:10px;}
+  .item-controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px;}
+  .item-controls select{padding:6px 8px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.85rem;}
+  .item-controls input[type=text]{flex:1; min-width:200px; padding:6px 8px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.85rem;}
+  .status-label{font-size:0.76rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft);}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="kicker">Canada Daily Code — Field Tools</div>
+    <h1>Insurance Coverage Gap Checklist</h1>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not insurance, legal, or financial advice.</strong> This is a checklist of common exclusions in standard commercial policies to prompt you to check your own policy and ask your broker — it does not read your policy for you and does not know what you're actually covered for. Confirm every answer with your broker or insurer directly.
+</div>
+
+<div class="wrap">
+
+  <div class="prompt-box">
+    <strong>Right now:</strong> find your actual policy's exclusions page and read it. For each item below, mark whether you're covered, excluded, or need to call your broker to find out.
+  </div>
+
+  <div class="section-head"><span class="no">No. 01</span><h2>Your coverage picture</h2></div>
+  <div class="dashboard">
+    <div class="stat"><div class="label">Confirmed covered</div><div class="value" id="statCovered">0</div></div>
+    <div class="stat stamp"><div class="label">Confirmed excluded or need to ask</div><div class="value" id="statGaps">0</div></div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 02</span><h2>Common coverage gaps to check</h2></div>
+  <div class="item-list" id="itemList"></div>
+
+  <div class="actions no-print" style="margin-top:20px;">
+    <button class="btn secondary" id="printBtn">Print my checklist</button>
+    <button class="btn" id="resetBtn" style="border-color:var(--red); color:var(--red); background:transparent;">Reset all selections</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> your selections and notes stay in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required.</p>
+    <p>Built by Canada Daily Code as a free educational checklist. Not affiliated with any insurer or broker. This list covers commonly excluded items in standard commercial policies but is not exhaustive — always review your full policy and ask your broker about anything unclear.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'cdc-coverage-gap-checklist-v1';
+
+  const ITEMS = [
+    { id:'flood', name:'Overland flood damage', desc:'Standard property policies often exclude flooding from rising water (rivers, storms) unless added as a separate endorsement — different from water damage from a burst pipe, which is often included.' },
+    { id:'cyber', name:'Cyberattacks and data breaches', desc:'Many general liability and property policies exclude cyber incidents by default — ransomware, data breach costs, and business email compromise often need a separate cyber policy.' },
+    { id:'businterrupt', name:'Business interruption', desc:'Covers lost income while you can\'t operate after a covered loss — often a separate add-on, and may only apply to specific causes listed in your policy, not every disruption.' },
+    { id:'equipbreak', name:'Equipment breakdown', desc:'Mechanical or electrical breakdown of equipment (not caused by fire or a covered peril) is often excluded from standard property coverage and needs a boiler & machinery or equipment breakdown endorsement.' },
+    { id:'earthquake', name:'Earthquake / seismic damage', desc:'Often excluded from standard property policies in most of Canada, with separate coverage available depending on your region\'s risk.' },
+    { id:'employeetheft', name:'Employee theft / dishonesty', desc:'General liability typically doesn\'t cover theft by your own employees — this usually requires a separate fidelity or crime coverage endorsement.' },
+    { id:'homebased', name:'Home-based business gaps', desc:'If you operate from home, a standard homeowner\'s policy usually excludes business equipment, inventory, and liability — often needs a business rider or separate commercial policy.' },
+    { id:'actofgod', name:'Wear, mold, and gradual damage', desc:'Gradual deterioration, mold, and wear-and-tear are commonly excluded across most standard commercial policies, regardless of cause.' }
+  ];
+
+  function loadStatus(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
+  }
+  function saveStatus(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+  let statusData = loadStatus();
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+
+  function renderItems(){
+    const list = document.getElementById('itemList');
+    list.innerHTML = ITEMS.map(item => {
+      const s = statusData[item.id] || { status: 'not-checked', notes: '' };
+      return `
+        <div class="item-card">
+          <div class="item-top">
+            <div>
+              <div class="item-name">${item.name}</div>
+            </div>
+          </div>
+          <div class="item-desc">${item.desc}</div>
+          <div class="item-controls no-print">
+            <span class="status-label">Status:</span>
+            <select data-id="${item.id}" class="status-field">
+              <option value="not-checked" ${s.status==='not-checked'?'selected':''}>Not checked yet</option>
+              <option value="covered" ${s.status==='covered'?'selected':''}>Confirmed covered</option>
+              <option value="excluded" ${s.status==='excluded'?'selected':''}>Confirmed excluded</option>
+              <option value="ask-broker" ${s.status==='ask-broker'?'selected':''}>Need to ask my broker</option>
+            </select>
+            <input type="text" data-id="${item.id}" class="notes-field" placeholder="Notes" value="${escapeHtml(s.notes)}">
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('.status-field').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        const id = sel.dataset.id;
+        statusData[id] = statusData[id] || { status:'not-checked', notes:'' };
+        statusData[id].status = sel.value;
+        saveStatus(statusData);
+        renderStats();
+      });
+    });
+    list.querySelectorAll('.notes-field').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const id = inp.dataset.id;
+        statusData[id] = statusData[id] || { status:'not-checked', notes:'' };
+        statusData[id].notes = inp.value;
+        saveStatus(statusData);
+      });
+    });
+  }
+
+  function renderStats(){
+    const covered = ITEMS.filter(i => (statusData[i.id] || {}).status === 'covered').length;
+    const gaps = ITEMS.filter(i => {
+      const st = (statusData[i.id] || {}).status;
+      return st === 'excluded' || st === 'ask-broker';
+    }).length;
+    document.getElementById('statCovered').textContent = covered;
+    document.getElementById('statGaps').textContent = gaps;
+  }
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(confirm('This will reset all your selections and notes. Continue?')){
+      statusData = {};
+      saveStatus(statusData);
+      renderItems();
+      renderStats();
+    }
+  });
+
+  renderItems();
+  renderStats();
+})();
+</script>
+
+</body>
+</html>
