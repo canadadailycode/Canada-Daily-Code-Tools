@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Response Tracker — Canada Daily Code</title>
+<style>
+  :root {
+    --navy: #0a1f44;
+    --gold: #c9a227;
+    --bg: #f2f2f2;
+    --red-bg: #fbeaea;
+    --red-border: #c0392b;
+    --tan-bg: #f5e9d6;
+    --tan-border: #c9a227;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color:#222; }
+  header { background: var(--navy); color:#fff; padding: 24px 32px; border-bottom: 4px solid var(--gold); }
+  header .eyebrow { font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#c9d6e8; }
+  header h1 { margin:6px 0 0; font-size:26px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
+  .disclaimer { background: var(--red-bg); border:1px solid var(--red-border); color:#7a2b20; padding:14px 18px; border-radius:4px; font-size:14px; margin-bottom:16px; }
+  .disclaimer b { color:#7a2b20; }
+  .cta-box { background: var(--tan-bg); border:1px solid var(--tan-border); padding:12px 18px; border-radius:4px; font-size:14px; margin-bottom:28px; }
+  .section-title { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:#888; margin-bottom:4px; margin-top:32px; }
+  h2 { font-size:20px; margin:0 0 4px; border-bottom:2px solid var(--navy); padding-bottom:8px; }
+  .status-grid { display:flex; gap:16px; flex-wrap:wrap; margin: 16px 0 8px; }
+  .status-card { flex:1; min-width:200px; background:#fff; border:1px solid #ddd; padding:16px; border-radius:4px; }
+  .status-card .label { font-size:11px; text-transform:uppercase; color:#888; letter-spacing:1px; }
+  .status-card .value { font-size:28px; font-weight:bold; margin-top:6px; }
+  .status-card.open .value { color:#c0392b; }
+  .status-card.done .value { color:#1e7d3b; }
+  table { width:100%; border-collapse: collapse; background:#fff; font-size:14px; margin-top:12px; }
+  th { text-align:left; font-size:11px; text-transform:uppercase; color:#888; padding:8px; border-bottom:2px solid #ccc; }
+  td { padding:8px; border-bottom:1px solid #eee; vertical-align:top; }
+  input[type=text], select, textarea { width:100%; padding:6px; border:1px solid #ccc; border-radius:3px; font-size:13px; font-family:inherit; }
+  textarea { resize: vertical; min-height:50px; }
+  .btn { padding:10px 18px; border-radius:4px; border:1px solid var(--navy); background:var(--navy); color:#fff; font-size:14px; margin-right:8px; margin-top:8px; cursor:pointer; }
+  .btn.secondary { background:#fff; color:#c0392b; border-color:#c0392b; }
+  .btn.copy { background:#fff; color:var(--navy); }
+  .script-builder { background:#fff; border:1px solid #ddd; padding:20px; border-radius:4px; margin: 12px 0; }
+  .script-builder label { font-size:13px; font-weight:bold; display:block; margin-bottom:4px; margin-top:12px; }
+  .script-builder label:first-child { margin-top:0; }
+  .script-output { background:#f2f2f2; border:1px dashed #999; padding:14px; margin-top:14px; font-size:14px; white-space:pre-wrap; border-radius:4px; }
+  footer { max-width:960px; margin: 20px auto 0; padding: 0 16px 40px; font-size:12px; color:#888; border-top:1px solid #ddd; padding-top:16px; }
+  .row-actions { white-space:nowrap; }
+  .small-btn { font-size:12px; padding:4px 8px; border-radius:3px; border:1px solid #ccc; background:#fafafa; cursor:pointer; }
+  .stars { font-size:13px; }
+  @media (max-width:700px){
+    table, thead, tbody, th, td, tr { display:block; }
+    thead { display:none; }
+    tr { margin-bottom:14px; border:1px solid #ddd; border-radius:4px; padding:8px; }
+    td { border:none; padding:6px 4px; }
+    td:before { content: attr(data-label); display:block; font-size:10px; text-transform:uppercase; color:#888; margin-bottom:2px; }
+  }
+  @media print {
+    .btn, .small-btn, .script-builder button { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Canada Daily Code — Field Tools</div>
+  <h1>Review Response Tracker</h1>
+</header>
+
+<div class="container">
+  <div class="disclaimer">
+    <b>Not legal or professional reputation-management advice.</b> This is a personal tracker and response-drafting tool. It doesn't post anything for you, doesn't contact any platform, and doesn't guarantee a review will be removed, changed, or that a response will resolve a dispute — for anything involving defamation, harassment, or a legal threat, confirm with a licensed professional before relying on this.
+  </div>
+
+  <div class="cta-box">
+    Right now: find one unanswered review on your business page and log it below — then use the builder to draft your reply before you post it.
+  </div>
+
+  <div class="section-title">No. 01</div>
+  <h2>Your status</h2>
+  <div class="status-grid">
+    <div class="status-card open">
+      <div class="label">Reviews still unanswered</div>
+      <div class="value" id="openCount">0</div>
+    </div>
+    <div class="status-card done">
+      <div class="label">Reviews responded to</div>
+      <div class="value" id="doneCount">0</div>
+    </div>
+  </div>
+
+  <div class="section-title">No. 02</div>
+  <h2>Build your response</h2>
+  <div class="script-builder">
+    <label>What the reviewer said (in a few words):</label>
+    <input type="text" id="issue" placeholder="e.g. said the order was late">
+    <label>What actually happened / your honest acknowledgement:</label>
+    <input type="text" id="acknowledge" placeholder="e.g. we were short-staffed that day">
+    <label>The real next step you're offering:</label>
+    <input type="text" id="nextStep" placeholder="e.g. a refund, or please email us at ___">
+    <label>Business or contact name to sign off with (optional):</label>
+    <input type="text" id="signoff" placeholder="e.g. — Sarah, Owner">
+    <button class="btn" onclick="buildScript()">Build my response</button>
+    <div class="script-output" id="scriptOutput">Your ready-to-post response will appear here.</div>
+    <button class="btn copy" onclick="copyScript()">Copy response</button>
+  </div>
+
+  <div class="section-title">No. 03</div>
+  <h2>Review log</h2>
+  <table id="logTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Platform</th>
+        <th>Rating</th>
+        <th>What they said</th>
+        <th>Responded?</th>
+        <th>My response (or notes)</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="logBody"></tbody>
+  </table>
+  <br>
+  <button class="btn" onclick="addRow()">+ Add review</button>
+  <button class="btn secondary" onclick="resetAll()">Reset all entries</button>
+  <br>
+  <button class="btn" onclick="window.print()">Print my log</button>
+</div>
+
+<footer>
+  <p><b>How your data is stored:</b> everything you type stays in this browser's local storage, on this device. Nothing is sent anywhere — no account, no analytics, no internet connection required.</p>
+  <p>Built by Canada Daily Code as a free educational tracker. Not affiliated with Google, Yelp, Facebook, or any review platform. This tool does not replace legal or professional advice on disputed, false, or harassing reviews.</p>
+</footer>
+
+<script>
+const STORAGE_KEY = 'cdc_review_tracker_v1';
+
+function loadData(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e){ return null; }
+}
+function saveData(data){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+}
+
+let rows = loadData();
+if (!rows || rows.length === 0) {
+  rows = [{date:'', platform:'', rating:'3', said:'', responded:'no', response:''}];
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function render(){
+  const body = document.getElementById('logBody');
+  body.innerHTML = '';
+  rows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td data-label="Date"><input type="text" value="${escapeHtml(r.date)}" placeholder="e.g. Sep 4" onchange="updateRow(${i},'date',this.value)"></td>
+      <td data-label="Platform"><input type="text" value="${escapeHtml(r.platform)}" placeholder="e.g. Google" onchange="updateRow(${i},'platform',this.value)"></td>
+      <td data-label="Rating">
+        <select onchange="updateRow(${i},'rating',this.value)">
+          ${[1,2,3,4,5].map(n => `<option value="${n}" ${String(r.rating)===String(n)?'selected':''}>${'★'.repeat(n)}${'☆'.repeat(5-n)}</option>`).join('')}
+        </select>
+      </td>
+      <td data-label="What they said"><input type="text" value="${escapeHtml(r.said)}" placeholder="Short summary" onchange="updateRow(${i},'said',this.value)"></td>
+      <td data-label="Responded?">
+        <select onchange="updateRow(${i},'responded',this.value)">
+          <option value="no" ${r.responded==='no'?'selected':''}>No — still unanswered</option>
+          <option value="yes" ${r.responded==='yes'?'selected':''}>Yes — responded</option>
+        </select>
+      </td>
+      <td data-label="My response (or notes)"><textarea onchange="updateRow(${i},'response',this.value)">${escapeHtml(r.response)}</textarea></td>
+      <td class="row-actions"><button class="small-btn" onclick="removeRow(${i})">Remove</button></td>
+    `;
+    body.appendChild(tr);
+  });
+  updateCounts();
+  saveData(rows);
+}
+
+function updateRow(i, field, value){
+  rows[i][field] = value;
+  saveData(rows);
+  updateCounts();
+}
+
+function addRow(){
+  rows.push({date:'', platform:'', rating:'3', said:'', responded:'no', response:''});
+  render();
+}
+
+function removeRow(i){
+  rows.splice(i,1);
+  if(rows.length === 0){
+    rows = [{date:'', platform:'', rating:'3', said:'', responded:'no', response:''}];
+  }
+  render();
+}
+
+function resetAll(){
+  if(confirm('Clear every entry in your log? This cannot be undone.')){
+    rows = [{date:'', platform:'', rating:'3', said:'', responded:'no', response:''}];
+    render();
+  }
+}
+
+function updateCounts(){
+  let open = 0, done = 0;
+  rows.forEach(r => {
+    const hasContent = r.said && r.said.trim() !== '';
+    if(hasContent){
+      if(r.responded === 'yes') done++; else open++;
+    }
+  });
+  document.getElementById('openCount').textContent = open;
+  document.getElementById('doneCount').textContent = done;
+}
+
+function buildScript(){
+  const issue = document.getElementById('issue').value.trim();
+  const ack = document.getElementById('acknowledge').value.trim();
+  const next = document.getElementById('nextStep').value.trim();
+  const sign = document.getElementById('signoff').value.trim();
+  const out = document.getElementById('scriptOutput');
+
+  if(!issue && !ack && !next){
+    out.textContent = 'Fill in at least one field above to build your response.';
+    return;
+  }
+
+  const issueText = issue || '[what they mentioned]';
+  const ackText = ack || '[what actually happened]';
+  const nextText = next || '[the next step you\'re offering]';
+
+  let msg = `Thank you for taking the time to share this. `;
+  msg += `We're sorry to hear about ${issueText} — ${ackText}. `;
+  msg += `We'd like to make this right: ${nextText}. `;
+  msg += `We appreciate the feedback and the chance to improve.`;
+  if(sign) msg += `\n\n${sign}`;
+
+  out.textContent = msg;
+}
+
+function copyScript(){
+  const text = document.getElementById('scriptOutput').textContent;
+  if(!text || text.indexOf('will appear here') !== -1 || text.indexOf('Fill in') === 0){
+    return;
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).catch(()=>{});
+  }
+}
+
+render();
+</script>
+</body>
+</html>
