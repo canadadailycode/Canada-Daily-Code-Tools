@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Six Blind Spots Protection Dashboard — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.55; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:34px 20px 26px; border-bottom:7px solid var(--gold); text-align:center;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.72rem; letter-spacing:2px; color:var(--gold-soft); margin-bottom:10px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.9rem; margin:0 0 8px;}
+  .masthead p{max-width:620px; margin:0 auto; color:#C9D1D9; font-size:0.95rem;}
+
+  .disclaimer{max-width:1000px; margin:20px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .progress-bar{background:#fff; border:1px solid var(--line); height:28px; border-radius:2px; overflow:hidden; margin:30px 0 20px;}
+  .progress-fill{background:var(--teal); height:100%; display:flex; align-items:center; justify-content:flex-end; color:#fff; font-family:var(--mono); font-size:0.78rem; padding-right:10px; transition:width 0.3s; min-width:70px;}
+
+  .spot-list{display:flex; flex-direction:column; gap:14px;}
+  .spot-card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .spot-card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .spot-card.shielded{border-left:4px solid var(--teal);}
+  .spot-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;}
+  .spot-num{font-family:var(--mono); color:var(--gold); font-size:0.78rem; text-transform:uppercase; letter-spacing:1px;}
+  .spot-name{font-family:var(--serif); font-size:1.15rem; margin:4px 0 8px;}
+  .spot-desc{font-size:0.88rem; color:var(--ink-soft); margin-bottom:10px;}
+  .spot-link{font-family:var(--mono); font-size:0.78rem; white-space:nowrap;}
+  .spot-controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;}
+  .spot-controls select{padding:7px 9px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.85rem;}
+  .spot-controls input[type=text]{flex:1; min-width:200px; padding:7px 9px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.85rem;}
+  .status-label{font-size:0.76rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft);}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .actions{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="kicker">Canada Daily Code — Weekly Flagship</div>
+  <h1>Six Blind Spots Protection Dashboard</h1>
+  <p>Turnover costs, cross-border duties, insurance gaps, workers' compensation, negotiation, and reviews — each linked to the real tool built for it this week.</p>
+</div>
+
+<div class="disclaimer">
+  <strong>Not tax, legal, insurance, or financial advice.</strong> This is a self-assessment dashboard for the six blind spots covered this week. It doesn't diagnose your business or guarantee protection — it's a structured way to see where each one stands and go do the real work. Always use your own judgment and, for significant decisions, a licensed professional's advice.
+</div>
+
+<div class="wrap">
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%;">0 / 6 shielded</div></div>
+
+  <div class="spot-list" id="spotList"></div>
+
+  <div class="actions no-print">
+    <button class="btn secondary" id="printBtn">Print my status</button>
+    <button class="btn" id="resetBtn" style="border-color:var(--red); color:var(--red); background:transparent;">Reset all statuses</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> your statuses and notes for each blind spot stay in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required.</p>
+    <p>Built by Canada Daily Code as a free, offline dashboard tying together this week's six tools. This is a starting point for closing real exposure, not a guarantee of protection.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'cdc-blindspots-dashboard-v1';
+  const BASE_URL = 'https://canadadailycode.github.io/Canada-Daily-Code-Tools/';
+
+  const SPOTS = [
+    { id:'turnover', name:'The Hidden Turnover Cost', desc:'Calculate the real cost of losing an employee — training, ramp-up, and hiring time.', tool:'turnover-cost-calculator.html', toolName:'Employee Turnover Cost Calculator' },
+    { id:'crossborder', name:'Cross-Border Duty Exposure', desc:'Decide who pays US customs duties and see the real margin impact.', tool:'cross-border-duty-calculator.html', toolName:'Cross-Border Duty Decision Calculator' },
+    { id:'insurance', name:'Insurance Coverage Gaps', desc:'Check your policy against commonly excluded items like flood and cyber.', tool:'insurance-coverage-gap-checklist.html', toolName:'Insurance Coverage Gap Checklist' },
+    { id:'wcb', name:'Workers\' Compensation Exposure', desc:'Confirm registration with your province\'s actual workers\' comp board.', tool:'wcb-registration-checklist.html', toolName:'Workers\' Compensation Registration Checklist' },
+    { id:'negotiation', name:'The Free Concession Reflex', desc:'Trade concessions instead of giving them away for free.', tool:'negotiation-trade-script-builder.html', toolName:'Negotiation Trade Script Builder' },
+    { id:'reviews', name:'The Compounding Review', desc:'Respond to every review before its silence keeps costing you.', tool:'review-response-tool.html', toolName:'Review Response Tool' }
+  ];
+
+  function loadStatus(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
+  }
+  function saveStatus(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+  let statusData = loadStatus();
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+
+  function renderSpots(){
+    const list = document.getElementById('spotList');
+    list.innerHTML = SPOTS.map((spot, idx) => {
+      const s = statusData[spot.id] || { status: 'not-started', notes: '' };
+      const cardClass = s.status === 'shielded' ? 'shielded' : '';
+      return `
+        <div class="spot-card ${cardClass}">
+          <div class="spot-top">
+            <div>
+              <div class="spot-num">Blind Spot ${idx + 1} of 6</div>
+              <div class="spot-name">${spot.name}</div>
+            </div>
+            <a class="spot-link" href="${BASE_URL}${spot.tool}" target="_blank" rel="noopener">Open ${spot.toolName} →</a>
+          </div>
+          <div class="spot-desc">${spot.desc}</div>
+          <div class="spot-controls no-print">
+            <span class="status-label">Status:</span>
+            <select data-id="${spot.id}" class="status-field">
+              <option value="not-started" ${s.status==='not-started'?'selected':''}>Not started</option>
+              <option value="in-progress" ${s.status==='in-progress'?'selected':''}>In progress</option>
+              <option value="shielded" ${s.status==='shielded'?'selected':''}>Shielded</option>
+            </select>
+            <input type="text" data-id="${spot.id}" class="notes-field" placeholder="Notes on where you're at" value="${escapeHtml(s.notes)}">
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('.status-field').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        const id = sel.dataset.id;
+        statusData[id] = statusData[id] || { status:'not-started', notes:'' };
+        statusData[id].status = sel.value;
+        saveStatus(statusData);
+        renderSpots();
+        renderProgress();
+      });
+    });
+    list.querySelectorAll('.notes-field').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const id = inp.dataset.id;
+        statusData[id] = statusData[id] || { status:'not-started', notes:'' };
+        statusData[id].notes = inp.value;
+        saveStatus(statusData);
+      });
+    });
+  }
+
+  function renderProgress(){
+    const shielded = SPOTS.filter(s => (statusData[s.id] || {}).status === 'shielded').length;
+    const pct = (shielded / SPOTS.length) * 100;
+    const fill = document.getElementById('progressFill');
+    fill.style.width = pct + '%';
+    fill.textContent = shielded + ' / ' + SPOTS.length + ' shielded';
+  }
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(confirm('This will erase your statuses and notes for all six blind spots. Continue?')){
+      statusData = {};
+      saveStatus(statusData);
+      renderSpots();
+      renderProgress();
+    }
+  });
+
+  renderSpots();
+  renderProgress();
+})();
+</script>
+
+</body>
+</html>
