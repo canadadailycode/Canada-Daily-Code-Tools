@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Negotiation Trade Script Builder — Canada Daily Code</title>
+<style>
+  :root{
+    --paper:#EEF1EF; --paper-card:#F8F9F7; --ink:#16233A; --ink-soft:#4A5568;
+    --line:#C7CCC6; --gold:#A9761F; --gold-soft:#F1E4C8; --teal:#2F6F62;
+    --teal-soft:#DCEAE6; --red:#9C3B3B; --red-soft:#F3DEDE;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Spectral','Iowan Old Style',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; padding-bottom:60px;}
+  a{color:var(--teal);}
+
+  .masthead{background:var(--ink); color:var(--paper); padding:28px 20px 22px; border-bottom:6px solid var(--gold);}
+  .masthead-inner{max-width:1000px; margin:0 auto; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;}
+  .masthead h1{font-family:var(--serif); font-weight:600; font-size:1.6rem; margin:0;}
+  .masthead .kicker{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:6px;}
+  .masthead .file-count{font-family:var(--mono); font-size:0.85rem; opacity:0.85;}
+
+  .disclaimer{max-width:1000px; margin:18px auto 0; padding:14px 18px; background:var(--red-soft); border:1px solid var(--red); border-radius:2px; font-size:0.86rem; color:var(--ink);}
+  .disclaimer strong{color:var(--red);}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+  .section-head{display:flex; align-items:baseline; gap:10px; margin:36px 0 14px;}
+  .section-head .no{font-family:var(--mono); color:var(--gold); font-size:0.85rem;}
+  .section-head h2{font-family:var(--serif); font-size:1.25rem; margin:0; border-bottom:2px solid var(--ink); padding-bottom:4px; flex:1;}
+
+  .prompt-box{background:var(--gold-soft); border:1px solid var(--gold); border-radius:2px; padding:14px 18px; font-size:0.9rem; margin-bottom:16px;}
+  .prompt-box strong{color:var(--gold);}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); padding:20px; position:relative;}
+  .card::before{content:""; position:absolute; top:0; left:22px; width:2px; height:12px; background:var(--gold);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field select{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; font-family:var(--sans); font-size:0.92rem; color:var(--ink);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .sentence-box{background:var(--ink); color:var(--paper); padding:22px; border-radius:2px; margin:16px 0; text-align:center;}
+  .sentence-box .label{font-family:var(--mono); text-transform:uppercase; font-size:0.7rem; letter-spacing:1.5px; color:var(--gold-soft); margin-bottom:10px;}
+  .sentence-box .sentence{font-family:var(--serif); font-size:1.25rem; line-height:1.4;}
+  .copy-btn{margin-top:12px;}
+
+  .btn{font-family:var(--sans); font-weight:600; font-size:0.88rem; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ink);}
+  .btn.small{padding:5px 10px; font-size:0.76rem;}
+  .btn.danger{border-color:var(--red); color:var(--red); background:transparent;}
+  .btn.on-dark{border-color:var(--gold-soft); color:var(--gold-soft);}
+  .actions{display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; justify-content:center;}
+
+  .dashboard{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .stat{background:var(--paper-card); padding:16px 14px;}
+  .stat .label{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-soft); margin-bottom:6px;}
+  .stat .value{font-family:var(--mono); font-size:1.3rem; color:var(--ink);}
+  .stat.stamp{background:var(--red-soft);}
+  .stat.stamp .value{color:var(--red);}
+
+  .ledger{width:100%; border-collapse:collapse; background:var(--paper-card); font-size:0.86rem;}
+  .ledger th{text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:8px 10px;}
+  .ledger td{padding:10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ledger tr:hover td{background:var(--teal-soft);}
+  .empty-row{text-align:center; padding:36px 10px; color:var(--ink-soft); font-style:italic;}
+  .tag{display:inline-block; font-family:var(--mono); font-size:0.68rem; padding:3px 7px; border-radius:2px; text-transform:uppercase;}
+  .tag.traded{background:var(--teal-soft); color:var(--teal); border:1px solid var(--teal);}
+  .tag.free{background:var(--red-soft); color:var(--red); border:1px solid var(--red);}
+
+  footer{max-width:1000px; margin:50px auto 0; padding:16px 20px 0; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="kicker">Canada Daily Code — Field Tools</div>
+      <h1>Negotiation Trade Script Builder</h1>
+    </div>
+    <div class="file-count">FILE LOG · <span id="entryCount">0</span> concessions logged</div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Not business or legal advice.</strong> This is a simple script template and a tracker for your own concessions — it doesn't negotiate for you or guarantee any outcome from using this approach.
+</div>
+
+<div class="wrap">
+
+  <div class="prompt-box">
+    <strong>The rule:</strong> never give a concession for free. Trade it for something specific in return.
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 01</span><h2>Build your trade sentence</h2></div>
+  <div class="card no-print">
+    <div class="row2">
+      <div class="field"><label for="wConcede">What they're asking you to give</label><input type="text" id="wConcede" placeholder="e.g. a 10% discount"></div>
+      <div class="field"><label for="wAsk">What you'll ask for in return</label><input type="text" id="wAsk" placeholder="e.g. payment upfront instead of net-30"></div>
+    </div>
+    <div class="actions"><button class="btn" id="buildBtn">Build my sentence</button></div>
+  </div>
+
+  <div id="sentenceDisplay" style="display:none;">
+    <div class="sentence-box">
+      <div class="label">Say this out loud</div>
+      <div class="sentence" id="builtSentence"></div>
+      <div class="actions copy-btn">
+        <button class="btn on-dark" id="copyBtn" style="background:transparent;">Copy sentence</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 02</span><h2>Your concession pattern</h2></div>
+  <div class="dashboard">
+    <div class="stat"><div class="label">Concessions logged</div><div class="value" id="statTotal">0</div></div>
+    <div class="stat"><div class="label">Traded for something</div><div class="value" id="statTraded">0</div></div>
+    <div class="stat stamp"><div class="label">Given free</div><div class="value" id="statFree">0</div></div>
+  </div>
+
+  <div class="section-head no-print"><span class="no">No. 03</span><h2>Log a concession</h2></div>
+  <div class="card no-print">
+    <div class="row3">
+      <div class="field"><label for="cDate">Date</label><input type="date" id="cDate"></div>
+      <div class="field"><label for="cDeal">Deal / client</label><input type="text" id="cDeal" placeholder="e.g. Acme Corp contract"></div>
+      <div class="field"><label for="cType">Was it traded or free?</label>
+        <select id="cType"><option value="traded">Traded for something</option><option value="free">Given free</option></select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="cGave">What you gave</label><input type="text" id="cGave" placeholder="e.g. 10% discount"></div>
+      <div class="field"><label for="cGot">What you got in return (if traded)</label><input type="text" id="cGot" placeholder="e.g. Payment upfront"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="saveBtn">Save this concession</button>
+      <button class="btn secondary" id="clearFormBtn">Clear form</button>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="no">No. 04</span><h2>Your concession log</h2></div>
+  <div style="overflow-x:auto;">
+    <table class="ledger">
+      <thead><tr><th>Date</th><th>Deal</th><th>Gave</th><th>Got</th><th>Type</th><th class="no-print">—</th></tr></thead>
+      <tbody id="logBody"><tr><td colspan="6" class="empty-row">No concessions logged yet.</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="actions no-print" style="margin-top:18px; justify-content:flex-start;">
+    <button class="btn secondary" id="exportBtn">Export CSV</button>
+    <button class="btn secondary" id="printBtn">Print report</button>
+    <button class="btn danger" id="wipeBtn">Erase all data</button>
+  </div>
+
+  <footer>
+    <p><strong>How your data is stored:</strong> everything stays in this browser only, in local storage on this device. Nothing is sent anywhere, no account, no analytics, no internet connection required. Export CSV to keep a backup before clearing browser data or switching devices.</p>
+    <p>Built by Canada Daily Code as a free, offline tool for trading instead of giving in negotiations.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  document.getElementById('buildBtn').addEventListener('click', ()=>{
+    const concede = document.getElementById('wConcede').value.trim();
+    const ask = document.getElementById('wAsk').value.trim();
+    if(!concede || !ask){ alert('Please fill in both fields.'); return; }
+    const sentence = `I can do ${concede} if we also ${ask}.`;
+    document.getElementById('builtSentence').textContent = sentence;
+    document.getElementById('sentenceDisplay').style.display = 'block';
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', ()=>{
+    const text = document.getElementById('builtSentence').textContent;
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn = document.getElementById('copyBtn');
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(()=>{ btn.textContent = original; }, 1500);
+    }).catch(()=>{
+      alert('Could not copy automatically — please select and copy the text manually.');
+    });
+  });
+
+  const STORAGE_KEY = 'cdc-negotiation-log-v1';
+  function loadEntries(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch(e){ return []; }
+  }
+  function saveEntries(e){ localStorage.setItem(STORAGE_KEY, JSON.stringify(e)); }
+
+  let entries = loadEntries();
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('cDate').value = today;
+
+  function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+
+  function render(){
+    const body = document.getElementById('logBody');
+    if(entries.length === 0){
+      body.innerHTML = '<tr><td colspan="6" class="empty-row">No concessions logged yet.</td></tr>';
+    } else {
+      body.innerHTML = entries.slice().sort((a,b)=> b.date.localeCompare(a.date)).map(e=>`
+        <tr>
+          <td>${e.date}</td><td>${escapeHtml(e.deal)}</td><td>${escapeHtml(e.gave)}</td>
+          <td>${escapeHtml(e.got) || '—'}</td>
+          <td><span class="tag ${e.type}">${e.type === 'traded' ? 'Traded' : 'Free'}</span></td>
+          <td class="no-print"><button class="btn small danger" data-id="${e.id}">Delete</button></td>
+        </tr>`).join('');
+      body.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          entries = entries.filter(e=> String(e.id) !== btn.dataset.id);
+          saveEntries(entries); render();
+        });
+      });
+    }
+
+    document.getElementById('entryCount').textContent = entries.length;
+    document.getElementById('statTotal').textContent = entries.length;
+    document.getElementById('statTraded').textContent = entries.filter(e=> e.type === 'traded').length;
+    document.getElementById('statFree').textContent = entries.filter(e=> e.type === 'free').length;
+  }
+
+  document.getElementById('saveBtn').addEventListener('click', ()=>{
+    const deal = document.getElementById('cDeal').value.trim();
+    const gave = document.getElementById('cGave').value.trim();
+    const got = document.getElementById('cGot').value.trim();
+    const type = document.getElementById('cType').value;
+    const dateVal = document.getElementById('cDate').value || today;
+    if(!deal || !gave){ alert('Please fill in the deal and what you gave.'); return; }
+    entries.push({ id: Date.now(), date: dateVal, deal, gave, got, type });
+    saveEntries(entries);
+    document.getElementById('cDeal').value = '';
+    document.getElementById('cGave').value = '';
+    document.getElementById('cGot').value = '';
+    document.getElementById('cType').value = 'traded';
+    document.getElementById('cDate').value = today;
+    render();
+  });
+  document.getElementById('clearFormBtn').addEventListener('click', ()=>{
+    document.getElementById('cDeal').value = '';
+    document.getElementById('cGave').value = '';
+    document.getElementById('cGot').value = '';
+    document.getElementById('cType').value = 'traded';
+    document.getElementById('cDate').value = today;
+  });
+
+  function csvSafe(str){
+    const s = (str || '').toString().replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    if(entries.length === 0){ alert('No concessions to export yet.'); return; }
+    const header = ['Date','Deal','Gave','Got','Type'];
+    const lines = [header.join(',')];
+    entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
+      lines.push([e.date, csvSafe(e.deal), csvSafe(e.gave), csvSafe(e.got), e.type].join(','));
+    });
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'negotiation-log-' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  document.getElementById('wipeBtn').addEventListener('click', ()=>{
+    if(confirm('This will permanently delete every concession stored in this browser. Export a CSV first if you want to keep a copy. Continue?')){
+      entries = [];
+      saveEntries(entries);
+      render();
+    }
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
